@@ -1,0 +1,59 @@
+{include file='common/head.html'}
+
+<div class="layui-body">
+	<div class="layui-tab layui-tab-brief" lay-filter="tab">
+	  <ul class="layui-tab-title">
+	    <li {if([$log_tab]=='sys')}class="layui-this"{/if} lay-id="t1" data-href="{$sys_tab_url}" onclick="location.href=this.getAttribute('data-href')">系统日志</li>
+	    <li {if([$log_tab]=='spider')}class="layui-this"{/if} lay-id="t2" data-href="{$spider_tab_url}" onclick="location.href=this.getAttribute('data-href')">蜘蛛日志</li>
+	    <li {if([$log_tab]=='ai')}class="layui-this"{/if} lay-id="t3" data-href="{$ai_tab_url}" onclick="location.href=this.getAttribute('data-href')">AI 日志</li>
+	  </ul>
+	  <div class="layui-tab-content">
+	  	   <div class="layui-tab-item {if([$log_tab]=='sys')}layui-show{/if}">
+	  	   		{if([$log_tab]=='sys')}
+		  	   	<table class="layui-table">
+	            	<thead>
+	                    <tr>
+	                        <th>序号</th>
+	                        <th>事件内容</th>
+	                        <th>用户IP</th>
+	                        <th>操作系统</th>
+	                        <th>浏览器</th>
+	                        <th>用户名</th>
+	                        <th>时间</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                    {foreach $syslogs(key,value,num)}
+	                    <tr>
+	                        <td>[num]</td>
+	                        <td>[value->event]</td>
+	                        <td>{fun=long2ip_safe($value->user_ip)}</td>
+	                        <td>[value->user_os]</td>
+	                        <td>[value->user_bs]</td>
+	                        <td>[value->create_user]</td>
+	                        <td>[value->create_time]</td>
+	                    </tr>
+	                    {/foreach}
+	                </tbody>
+	            </table>
+	            {if(session('ucode')==10001 && [$syslogs])}
+	            	{fun=admin_post_link(url('/admin/Syslog/clear'),'清空日志','reload','layui-btn layui-btn-sm','您确定要清空么？')}
+	            {/if}
+	            <div class="page">{$pagebar}</div>
+	            {/if}
+	  	   </div>
+	  	   <div class="layui-tab-item {if([$log_tab]=='spider')}layui-show{/if}">
+	  	   		{if([$log_tab]=='spider')}
+	  	   		{include file='system/syslog_text.html'}
+	            {/if}
+	  	   </div>
+	  	   <div class="layui-tab-item {if([$log_tab]=='ai')}layui-show{/if}">
+	  	   		{if([$log_tab]=='ai')}
+	  	   		{include file='system/syslog_text.html'}
+	            {/if}
+	  	   </div>
+	  </div>
+	</div>	
+</div>
+
+{include file='common/foot.html'}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>管理登录</title>
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="/apps/admin/view/default/layui/css/layui.css?v=2.13.9">
+<link rel="stylesheet" href="/apps/admin/view/default/font-awesome/css/all.min.css?v=6.7.2">
+<link rel="stylesheet" href="/apps/admin/view/default/css/login.css?v=v1.1.6">
+</head>
+<body>
+<div class="user-login">
+	<div class="user-login-main">
+		<div class="user-login-header">
+			<h2>
+			<img src="/apps/admin/view/default/images/logo-icon.png?v=g1" height="40">
+			管理登录
+			</h2>
+			<p>请使用管理员账号登录</p>
+		</div>
+		<form action="{url./admin/Index/login}" method="post" class="layui-form">
+			<input type="hidden" name="formcheck" value="{$formcheck}">
+			<div class="user-login-box">
+				<div class="layui-form-item">
+					<label class="user-login-icon layui-icon layui-icon-username" for="login-username"><span class="layui-hide">用户名</span></label>
+					<input id="login-username" name="username" type="text" placeholder="用户名" autocomplete="username" class="layui-input">
+				</div>
+				<div class="layui-form-item">
+					<label class="user-login-icon layui-icon layui-icon-password" for="login-password"><span class="layui-hide">密码</span></label>
+					<input id="login-password" name="password" type="password" placeholder="密码" autocomplete="current-password" class="layui-input">
+				</div>
+				{if(checkcode==1)}
+				<div class="layui-form-item">
+					<div class="layui-row">
+						<div class="layui-col-xs7 layui-col-sm8">
+							<label class="user-login-icon layui-icon layui-icon-vercode" for="login-checkcode"><span class="layui-hide">验证码</span></label>
+							<input id="login-checkcode" name="checkcode" type="text" placeholder="验证码" autocomplete="off" class="layui-input">
+						</div>
+						<div class="layui-col-xs5 layui-col-sm4">
+							<div style="margin-left: 10px;">
+								<img title="点击刷新" src="/code?admin=1" class="user-login-codeimg" onclick="this.src='/code?admin=1&'+Math.random()">
+							</div>
+						</div>
+					</div>
+				</div>
+				{/if}
+				<div class="layui-form-item">
+					<button class="layui-btn layui-btn-fluid" type="submit">登 录</button>
+				</div>
+				<div style="color:red;">{$error}</div>
+			</div>
+		</form>
+	</div>
+	<div class="layui-trans user-login-footer">
+		<p>(c) Management</p>
+	</div>
+</div>
+</body>
+</html>

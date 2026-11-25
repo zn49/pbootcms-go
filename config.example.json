@@ -1,0 +1,8 @@
+{
+  "addr": ":8080",
+  "driver": "sqlite",
+  "dsn": "site/data/gbootcms.db",
+  "site_root": "site",
+  "admin_path": "auto",
+  "cookie_salt": ""
+}

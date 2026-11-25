@@ -1,0 +1,138 @@
+# Push a tag like v0.1.0 → GitHub Release with binaries + Docker image tarball.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  IMAGE_NAME: gbootcms
+
+jobs:
+  binaries:
+    name: Build binaries
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+            ext: .exe
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: "0"
+          EXT: ${{ matrix.ext }}
+        run: |
+          out="gbootcms-${GOOS}-${GOARCH}${EXT}"
+          go build -trimpath -ldflags="-s -w" -o "$out" ./cmd/gbootcms
+          echo "OUT=$out" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bin-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: gbootcms-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }}
+
+  docker:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image tags
+        id: meta
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "tar=gbootcms-${TAG}-docker-linux-amd64.tar.gz" >> "$GITHUB_OUTPUT"
+          # GHCR: ghcr.io/<owner>/<image>
+          OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          echo "ghcr=ghcr.io/${OWNER}/${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        run: |
+          docker build -t "${{ steps.meta.outputs.ghcr }}:${{ steps.meta.outputs.tag }}" \
+            -t "${{ steps.meta.outputs.ghcr }}:latest" \
+            -t "${IMAGE_NAME}:${{ steps.meta.outputs.tag }}" \
+            .
+
+      - name: Push to GHCR
+        run: |
+          docker push "${{ steps.meta.outputs.ghcr }}:${{ steps.meta.outputs.tag }}"
+          docker push "${{ steps.meta.outputs.ghcr }}:latest"
+
+      - name: Save image for Release asset
+        run: |
+          docker save "${IMAGE_NAME}:${{ steps.meta.outputs.tag }}" | gzip > "${{ steps.meta.outputs.tar }}"
+          ls -lh "${{ steps.meta.outputs.tar }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docker-amd64
+          path: ${{ steps.meta.outputs.tar }}
+
+  release:
+    name: Publish GitHub Release
+    needs: [binaries, docker]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Collect assets
+        run: |
+          mkdir -p assets
+          find dist -type f -exec cp -v {} assets/ \;
+          cd assets
+          sha256sum * > SHA256SUMS.txt
+          ls -lah
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: assets/*
+          body: |
+            ## 下载说明
+
+            | 文件 | 用途 |
+            | --- | --- |
+            | `gbootcms-linux-amd64` 等 | 二进制直跑（见 README「本地 / 二进制部署」） |
+            | `gbootcms-*-docker-linux-amd64.tar.gz` | 离线 Docker 镜像，`docker load` 后使用 |
+            | GHCR | `ghcr.io/<owner>/gbootcms:${{ github.ref_name }}` 可直接 `docker pull` |
+
+            Windows 二进制带 `.exe` 后缀。校验见 `SHA256SUMS.txt`。
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

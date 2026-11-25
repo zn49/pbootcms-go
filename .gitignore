@@ -1,0 +1,54 @@
+# --- local / secrets ---
+config.json
+config.local.json
+.env
+.env.*
+!.env.example
+# --- vendor site copy (local only; use site/ in repo) ---
+PbootCMS-3.2.33/
+_backup_*/
+
+# --- build artifacts ---
+*.exe
+*.exe~
+*.test
+*.out
+/gbootcms
+/gbootcms.exe
+coverage.out
+
+# --- IDE / editor ---
+.idea/
+.vscode/
+.cursor/
+*.swp
+*~
+
+# --- local tools ---
+.tools/
+
+# --- temp ---
+tmp_*
+tmp_head.txt
+*.bak
+
+# --- runtime data ---
+**/data/cache/
+**/data/session/
+**/data/log/
+**/data/backup/
+**/data/.app_salt
+**/data/index.html
+**/*.db
+**/*.sqlite
+!site/data/gbootcms.db
+**/static/upload/**
+!**/static/upload/.gitkeep
+**/static/backup/**
+!**/static/backup/.gitkeep
+!**/static/backup/sql/
+!**/static/backup/sql/**
+**/uploads/
+runtime/
+logs/
+backups/

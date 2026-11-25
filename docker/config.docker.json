@@ -1,0 +1,8 @@
+{
+  "addr": ":8080",
+  "driver": "sqlite",
+  "dsn": "",
+  "site_root": "/app/site",
+  "admin_path": "auto",
+  "cookie_salt": ""
+}

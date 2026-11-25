@@ -1,0 +1,12 @@
+{include file=head.html}
+<div class="layui-tab layui-tab-brief" lay-filter="tab">
+  <ul class="layui-tab-title">{$tab_titles}</ul>
+  <div class="layui-tab-content">
+    <form method="post" class="layui-form">
+      <input type="hidden" name="formcheck" value="{$formcheck}">
+      {$tab_panes}
+      <div class="layui-form-item" style="margin-top:15px"><button class="layui-btn">保存配置</button></div>
+    </form>
+  </div>
+</div>
+{include file=foot.html}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>GbootCMS管理中心</title>
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="/apps/admin/view/default/layui/css/layui.css?v=2.13.9">
+<link rel="stylesheet" href="/apps/admin/view/default/font-awesome/css/all.min.css?v=6.7.2">
+<link rel="stylesheet" href="/apps/admin/view/default/font-awesome/css/v4-shims.min.css?v=6.7.2">
+<link rel="stylesheet" href="/apps/admin/view/default/css/comm.css?v=v3.0.8">
+<style>html,body{height:100%;background:#fff}</style>
+<script src="/apps/admin/view/default/js/jquery-3.7.1.min.js"></script>
+</head>
+<body class="layui-layout-body">
+<div style="display:none">
+  <span id="controller" data-controller="{$controller}"></span>
+  <span id="url" data-url="{$url}"></span>
+  <span id="preurl" data-preurl="{$admin_path}"></span>
+  <span id="sitedir" data-sitedir="/"></span>
+  <span id="mcode" data-mcode="{$get.mcode}"></span>
+  <input type="hidden" id="formcheck" name="formcheck" value="{$formcheck}">
+</div>
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo">
+      <a href="{url./admin/Index/home}">
+        <img src="/apps/admin/view/default/images/logo-icon.png?v=g1" height="30">
+        GbootCMS管理中心
+        <span class="layui-badge layui-bg-gray">Go</span>
+      </a>
+    </div>
+    <ul class="menu">
+      <li class="menu-ico" title="显示或隐藏侧边栏"><i class="fa fa-bars"></i></li>
+    </ul>
+    {$area_html}
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item layui-hide-xs">
+        <a href="/" target="_blank"><i class="fa fa-home"></i> 网站主页</a>
+      </li>
+      <li class="layui-nav-item layui-hide-xs">
+        <a href="{url./admin/Index/home}?clear=1"><i class="fa fa-trash-o"></i> 清理缓存</a>
+      </li>
+      <li class="layui-nav-item layui-hide-xs">
+        <a href="javascript:;"><i class="fa fa-user-circle-o"></i> {$session.realname}</a>
+        <dl class="layui-nav-child">
+          <dd><a href="{url./admin/Index/ucenter}"><i class="fa fa-address-card-o"></i> 密码修改</a></dd>
+          <dd><a href="{url./admin/Index/loginOut}"><i class="fa fa-sign-out"></i> 退出登录</a></dd>
+        </dl>
+      </li>
+    </ul>
+  </div>
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <ul class="layui-nav layui-nav-tree" lay-shrink="all">
+        {$menu_html}
+        <li class="layui-nav-item layui-hide-sm"><a href="/" target="_blank"><i class="fa fa-home"></i> 网站主页</a></li>
+        <li class="layui-nav-item layui-hide-sm"><a href="{url./admin/Index/ucenter}"><i class="fa fa-address-card-o"></i> 资料修改</a></li>
+        <li class="layui-nav-item layui-hide-sm"><a href="{url./admin/Index/loginOut}"><i class="fa fa-sign-out"></i> 退出登录</a></li>
+      </ul>
+    </div>
+  </div>
+<div class="layui-body">

@@ -1,0 +1,5 @@
+{include file=head.html}
+<blockquote class="layui-elem-quote">{$site_title}　内容 {$content_n} 条　栏目 {$sort_n} 个</blockquote>
+{if(warn)}<div class="layui-bg-orange" style="padding:8px">{$warn}</div>{/if}
+<p><a class="layui-btn" href="{url./admin/Index/home/clear/1}">清理缓存</a></p>
+{include file=foot.html}

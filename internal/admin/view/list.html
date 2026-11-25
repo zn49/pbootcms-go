@@ -1,0 +1,15 @@
+{include file=head.html}
+<div class="layui-tab layui-tab-brief" lay-filter="tab">
+  <ul class="layui-tab-title">
+    <li class="{$on1}" lay-id="t1">列表</li>
+    {if(haspane==1)}<li class="{$on2}" lay-id="t2">{$tab2}</li>{/if}
+  </ul>
+  <div class="layui-tab-content">
+    <div class="layui-tab-item {$show1}">
+      {if(haspane==0)}<p><a class="layui-btn layui-btn-sm" href="{$addurl}">新增</a></p>{/if}
+      {$table}
+    </div>
+    {if(haspane==1)}<div class="layui-tab-item {$show2}">{$pane}</div>{/if}
+  </div>
+</div>
+{include file=foot.html}

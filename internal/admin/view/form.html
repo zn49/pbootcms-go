@@ -1,0 +1,30 @@
+{include file=head.html}
+<div class="layui-tab layui-tab-brief" lay-filter="tab">
+  <ul class="layui-tab-title">
+    <li class="layui-this" lay-id="t1">编辑</li>
+  </ul>
+  <div class="layui-tab-content">
+  <div class="layui-tab-item layui-show">
+<form class="layui-form" method="post">
+<input type="hidden" name="formcheck" value="{$formcheck}">
+{foreach $fields(key,value)}
+{if([value->head])}
+<div class="layui-form-item"><div class="layui-input-block"><b>[value->head]</b></div></div>
+{/if}
+<div class="layui-form-item">
+<label class="layui-form-label" for="f-[value->name]">[value->label]</label>
+<div class="layui-input-block">
+{if([value->area])}
+<textarea id="f-[value->name]" name="[value->name]" class="layui-textarea">[value->value]</textarea>
+{else}
+<input id="f-[value->name]" name="[value->name]" value="[value->value]" class="layui-input">
+{/if}
+</div>
+</div>
+{/foreach}
+<div class="layui-form-item"><button class="layui-btn">保存</button></div>
+</form>
+  </div>
+  </div>
+</div>
+{include file=foot.html}
