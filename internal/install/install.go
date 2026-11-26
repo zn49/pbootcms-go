@@ -3,6 +3,7 @@ package install
 import (
 	"context"
 	"crypto/rand"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -78,6 +79,15 @@ func Serve(a *app.App, w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		in := inputFrom(r)
+		if in.Mode == "import" {
+			adminPath, err := CompleteImport(a, in)
+			if err != nil {
+				writePage(w, err.Error(), formFrom(r))
+				return
+			}
+			writeDoneImport(w, adminPath)
+			return
+		}
 		adminPath, plain, err := Complete(a, in)
 		if err != nil {
 			f := formFrom(r)
@@ -93,6 +103,7 @@ func Serve(a *app.App, w http.ResponseWriter, r *http.Request) {
 
 // Input is the install form.
 type Input struct {
+	Mode                                     string // install | import
 	Title, Username, Password, Confirm, Addr string
 	Driver                                   string
 	SQLitePath                               string
@@ -100,6 +111,7 @@ type Input struct {
 }
 
 type formVals struct {
+	Mode                                   string
 	Title, Username, Password, Addr        string
 	Driver                                 string
 	SQLitePath                             string
@@ -112,14 +124,19 @@ func formDefaults(a *app.App) formVals {
 		addr = a.Cfg.Addr
 	}
 	return formVals{
-		Title: "PbootCMS-Go", Username: "admin", Password: GenPassword(), Addr: addr,
+		Mode: "install", Title: "PbootCMS-Go", Username: "admin", Password: GenPassword(), Addr: addr,
 		Driver: "sqlite", SQLitePath: "site/data/" + config.RandomDBFile(),
 		DBHost: "127.0.0.1", DBPort: "3306", DBUser: "root", DBName: "pbootcms",
 	}
 }
 
 func formFrom(r *http.Request) formVals {
+	mode := strings.TrimSpace(r.FormValue("mode"))
+	if mode != "import" {
+		mode = "install"
+	}
 	f := formVals{
+		Mode:       mode,
 		Title:      strings.TrimSpace(r.FormValue("title")),
 		Username:   strings.TrimSpace(r.FormValue("username")),
 		Password:   r.FormValue("password"),
@@ -148,7 +165,7 @@ func inputFrom(r *http.Request) Input {
 		pwd = f.Password
 	}
 	return Input{
-		Title: f.Title, Username: strings.TrimSpace(r.FormValue("username")),
+		Mode: f.Mode, Title: f.Title, Username: strings.TrimSpace(r.FormValue("username")),
 		Password: pwd, Confirm: pwd,
 		Addr: f.Addr, Driver: f.Driver, SQLitePath: f.SQLitePath,
 		DBHost: f.DBHost, DBPort: f.DBPort, DBUser: f.DBUser, DBPass: f.DBPass, DBName: f.DBName,
@@ -296,6 +313,108 @@ func Complete(a *app.App, in Input) (adminPath, plain string, err error) {
 	return adminPath, plain, nil
 }
 
+// CompleteImport writes config pointing at an existing Pboot/ay_* database and locks install.
+// Does not create admin or import seed SQL; upload/template must already be in place.
+func CompleteImport(a *app.App, in Input) (adminPath string, err error) {
+	mu.Lock()
+	defer mu.Unlock()
+	if Locked(a.Cfg.SiteRoot) {
+		return "", fmt.Errorf("已安装")
+	}
+	driver := config.NormalizeDriver(in.Driver)
+	if !config.ValidDriver(driver) {
+		return "", fmt.Errorf("请选择数据库类型")
+	}
+	addr := in.Addr
+	if addr == "" {
+		addr = ":8080"
+	}
+	wd, _ := os.Getwd()
+	siteRoot := a.Cfg.SiteRoot
+	if siteRoot == "" {
+		siteRoot = filepath.Join(wd, "site")
+	}
+	dsn, err := buildDSN(wd, siteRoot, in, driver)
+	if err != nil {
+		return "", err
+	}
+	if driver == "sqlite" {
+		st, err := os.Stat(dsn)
+		if err != nil || st.IsDir() || st.Size() == 0 {
+			return "", fmt.Errorf("请填写已有 SQLite 库路径（文件须存在且非空）")
+		}
+	}
+	if err := probePbootDB(driver, dsn); err != nil {
+		return "", err
+	}
+
+	cfgPath := a.CfgPath
+	if cfgPath == "" {
+		cfgPath = "config.json"
+	}
+	adminPath = config.RandomAdminPath()
+	salt := config.RandomSalt()
+	dsnOut := dsn
+	if driver == "sqlite" {
+		dsnOut = relToWD(wd, dsn)
+	}
+	raw := map[string]any{
+		"addr": addr, "driver": driver, "dsn": dsnOut,
+		"site_root": relToWD(wd, siteRoot), "admin_path": adminPath, "cookie_salt": salt,
+	}
+	nb, err := json.MarshalIndent(raw, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	if err := fsperm.WriteFile(cfgPath, append(nb, '\n'), fsperm.FilePrivate); err != nil {
+		return "", fmt.Errorf("写入配置失败: %w", err)
+	}
+	cfg, err := config.Load(cfgPath)
+	if err != nil {
+		return "", err
+	}
+	a.Cfg = cfg
+	a.CfgPath = cfgPath
+	if err := a.Bootstrap(); err != nil {
+		return "", fmt.Errorf("打开数据库失败: %w", err)
+	}
+	admin.SetAdminPath(cfg.AdminPath)
+	admin.SetCookieSalt(cfg.CookieSalt)
+	if err := WriteLock(cfg.SiteRoot); err != nil {
+		return "", fmt.Errorf("写入安装锁失败: %w", err)
+	}
+	return adminPath, nil
+}
+
+func probePbootDB(driver, dsn string) error {
+	sqlDrv, sqlDSN := "sqlite", "file:"+filepath.ToSlash(dsn)+"?_pragma=busy_timeout(5000)"
+	q := `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`
+	switch driver {
+	case "mysql":
+		sqlDrv, sqlDSN = "mysql", dsn
+		q = `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name=?`
+	case "pgsql":
+		sqlDrv, sqlDSN = "pgx", dsn
+		q = `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = current_schema() AND table_name=?`
+	}
+	db, err := sql.Open(sqlDrv, sqlDSN)
+	if err != nil {
+		return fmt.Errorf("无法连接数据库: %w", err)
+	}
+	defer db.Close()
+	if err := db.Ping(); err != nil {
+		return fmt.Errorf("无法连接数据库: %w", err)
+	}
+	var n int
+	if err := db.QueryRow(q, "ay_user").Scan(&n); err != nil {
+		return fmt.Errorf("检查库结构失败: %w", err)
+	}
+	if n == 0 {
+		return fmt.Errorf("目标库不像 Pboot 站点库（缺少 ay_user），请确认路径/连接")
+	}
+	return nil
+}
+
 func buildDSN(wd, siteRoot string, in Input, driver string) (string, error) {
 	switch driver {
 	case "sqlite":
@@ -387,8 +506,13 @@ func writePage(w http.ResponseWriter, errMsg string, f formVals) {
 	if pwd == "" {
 		pwd = GenPassword()
 	}
+	mode := f.Mode
+	if mode != "import" {
+		mode = "install"
+	}
 	_, _ = fmt.Fprintf(w, pageHTML,
 		errHTML,
+		checked(mode, "install"), checked(mode, "import"),
 		html.EscapeString(f.Title),
 		html.EscapeString(f.Username),
 		html.EscapeString(pwd),
@@ -410,11 +534,25 @@ func sel(cur, want string) string {
 	return ""
 }
 
+func checked(cur, want string) string {
+	if cur == want {
+		return " checked"
+	}
+	return ""
+}
+
 func writeDone(w http.ResponseWriter, adminPath, password string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
 	ap := html.EscapeString(adminPath)
 	_, _ = fmt.Fprintf(w, doneHTML, ap, ap, html.EscapeString(password))
+}
+
+func writeDoneImport(w http.ResponseWriter, adminPath string) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	ap := html.EscapeString(adminPath)
+	_, _ = fmt.Fprintf(w, doneImportHTML, ap, ap)
 }
 
 const pageHTML = `<!doctype html>
@@ -433,21 +571,30 @@ button{margin-top:1.25rem;width:100%%;padding:.65rem;border:0;border-radius:4px;
 .err{background:#fee;border:1px solid #e99;color:#900;padding:.6rem .75rem;border-radius:4px}
 .hint{font-size:.8rem;color:#888;margin-top:.15rem}
 .hid{display:none}
+.mode{display:flex;gap:1rem;margin:0 0 1rem;font-size:.95rem}
+.mode label{display:flex;align-items:center;gap:.4rem;margin:0;cursor:pointer}
+.mode input{width:auto}
 </style>
 </head>
 <body>
-<h1>安装 PbootCMS-Go</h1>
-<p class="sub">首次运行：选择数据库、写入配置、设置管理员。</p>
+<h1>PbootCMS-Go 安装</h1>
+<p class="sub">请先选择全新安装，或导入已有 Pboot 站点数据库。</p>
 %s
 <form method="post" action="/install" autocomplete="off">
+<div class="mode">
+<label><input type="radio" name="mode" value="install" id="mode-install"%s> 全新安装</label>
+<label><input type="radio" name="mode" value="import" id="mode-import"%s> 导入已有库</label>
+</div>
+<div id="box-fresh">
 <label>站点名称</label>
-<input name="title" required value="%s">
+<input name="title" id="fld-title" value="%s">
 <label>管理员账号</label>
-<input name="username" required pattern="[a-zA-Z][a-zA-Z0-9_]{2,31}" value="%s">
+<input name="username" id="fld-user" pattern="[a-zA-Z][a-zA-Z0-9_]{2,31}" value="%s">
 <p class="hint">字母开头，3–32 位字母数字下划线</p>
 <label>管理员密码</label>
-<input name="password" id="admin_pass" type="text" required minlength="8" value="%s" autocomplete="off">
+<input name="password" id="admin_pass" type="text" minlength="8" value="%s" autocomplete="off">
 <p class="hint">已自动生成高强度密码，请复制保存；可改。<a href="/install">换一个</a></p>
+</div>
 <label>数据库</label>
 <select name="driver" id="driver">
 <option value="sqlite"%s>SQLite（文件库，推荐本地）</option>
@@ -457,7 +604,8 @@ button{margin-top:1.25rem;width:100%%;padding:.65rem;border:0;border-radius:4px;
 <div id="box-sqlite">
 <label>SQLite 路径</label>
 <input name="sqlite_path" value="%s">
-<p class="hint">已随机文件名；相对项目目录，空库会自动导入结构</p>
+<p class="hint" id="hint-sqlite-install">已随机文件名；相对项目目录，空库会自动导入结构</p>
+<p class="hint hid" id="hint-sqlite-import">指向<strong>已有</strong> Pboot SQLite 库（非空）；upload / template / skin / uploads 请事先拷到 site 下</p>
 </div>
 <div id="box-remote" class="hid">
 <label>主机</label>
@@ -470,12 +618,13 @@ button{margin-top:1.25rem;width:100%%;padding:.65rem;border:0;border-radius:4px;
 <input name="db_pass" type="password" value="%s">
 <label>数据库名</label>
 <input name="db_name" value="%s">
-<p class="hint">请先建好空库；安装时会导入表结构。MySQL 默认 3306，PostgreSQL 默认 5432</p>
+<p class="hint" id="hint-remote-install">请先建好空库；安装时会导入表结构。MySQL 默认 3306，PostgreSQL 默认 5432</p>
+<p class="hint hid" id="hint-remote-import">填写<strong>已有</strong>站点库连接；不会改库内管理员与内容</p>
 </div>
 <label>监听地址</label>
 <input name="addr" value="%s">
 <p class="hint">如 :8080；改端口后需重启进程</p>
-<button type="submit">开始安装</button>
+<button type="submit" id="btn-go">开始安装</button>
 </form>
 <script>
 (function(){
@@ -483,6 +632,21 @@ button{margin-top:1.25rem;width:100%%;padding:.65rem;border:0;border-radius:4px;
   var sq=document.getElementById('box-sqlite');
   var rm=document.getElementById('box-remote');
   var port=document.getElementById('db_port');
+  var fresh=document.getElementById('box-fresh');
+  var btn=document.getElementById('btn-go');
+  var title=document.getElementById('fld-title');
+  var user=document.getElementById('fld-user');
+  var pass=document.getElementById('admin_pass');
+  function mode(){
+    var imp=document.getElementById('mode-import').checked;
+    fresh.className=imp?'hid':'';
+    title.required=!imp; user.required=!imp; pass.required=!imp;
+    btn.textContent=imp?'开始导入':'开始安装';
+    document.getElementById('hint-sqlite-install').className=imp?'hint hid':'hint';
+    document.getElementById('hint-sqlite-import').className=imp?'hint':'hint hid';
+    document.getElementById('hint-remote-install').className=imp?'hint hid':'hint';
+    document.getElementById('hint-remote-import').className=imp?'hint':'hint hid';
+  }
   function sync(){
     var v=d.value;
     sq.className=v==='sqlite'?'':'hid';
@@ -490,7 +654,10 @@ button{margin-top:1.25rem;width:100%%;padding:.65rem;border:0;border-radius:4px;
     if(v==='mysql'&&(port.value===''||port.value==='5432'))port.value='3306';
     if(v==='pgsql'&&(port.value===''||port.value==='3306'))port.value='5432';
   }
-  d.addEventListener('change',sync);sync();
+  d.addEventListener('change',sync);
+  document.getElementById('mode-install').addEventListener('change',mode);
+  document.getElementById('mode-import').addEventListener('change',mode);
+  sync();mode();
 })();
 </script>
 </body>
@@ -514,5 +681,25 @@ code{background:#eee;padding:.1rem .35rem;border-radius:3px}
 <p>后台：<a href="%s"><code>%s</code></a></p>
 <p>密码：<code>%s</code></p>
 <p>配置已写入 <code>config.json</code>。监听地址若有改动，请重启进程后再访问。</p>
+</body>
+</html>`
+
+const doneImportHTML = `<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>导入完成</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:28rem;margin:3rem auto;padding:0 1rem;color:#1a1a1a;background:#f6f6f4}
+a{color:#1a1a1a}
+code{background:#eee;padding:.1rem .35rem;border-radius:3px}
+</style>
+</head>
+<body>
+<h1>导入完成</h1>
+<p>已接入现有数据库。管理员账号与密码沿用原站；请保存新的后台路径：</p>
+<p>后台：<a href="%s"><code>%s</code></a></p>
+<p>配置已写入 <code>config.json</code>。若改了监听地址请重启后再访问。模板、上传目录请确认已放到 <code>site/</code>。</p>
 </body>
 </html>`

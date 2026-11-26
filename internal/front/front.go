@@ -284,7 +284,7 @@ func resolve(db *store.DB, acode, path string, page int, rules urlx.Rules) hit {
 		return h
 	}
 	if s, ok := byFile[path]; ok {
-		return listHit(s, page)
+		return listOrSingle(db, acode, s, page)
 	}
 	if rules.ContentPath {
 		if c, _ := domain.ContentOne(db, acode, path); c != nil {
@@ -323,6 +323,19 @@ func listHit(s map[string]string, page int) hit {
 		base = "list" + "_" + s["scode"]
 	}
 	return hit{Kind: "list", Sort: s, Page: page, Base: base}
+}
+
+// listOrSingle: 无 listtpl 有 contenttpl 的单页栏目，加载该栏目内容。
+func listOrSingle(db *store.DB, acode string, s map[string]string, page int) hit {
+	h := listHit(s, page)
+	if s["listtpl"] != "" || s["contenttpl"] == "" {
+		return h
+	}
+	rows, _, err := domain.Contents(db, acode, []string{s["scode"]}, "date", 1, 0, nil, "", "")
+	if err != nil || len(rows) == 0 {
+		return h
+	}
+	return hit{Kind: "content", Sort: s, Content: rows[0], Page: page, Base: h.Base}
 }
 
 func contentHit(s, c map[string]string, page int) hit {

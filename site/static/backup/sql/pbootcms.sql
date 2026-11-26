@@ -123,7 +123,7 @@ INSERT INTO `ay_config` (`id`,`name`,`value`,`type`,`sorting`,`description`) VAL
 ('28','watermark_text_font','','2','255','水印文本字体'),
 ('29','watermark_text_size','20','2','255','水印文本字号'),
 ('30','watermark_text_color','100,100,100','2','255','水印文本字体颜色'),
-('31','watermark_pic','/static/images/logo.png','2','255','水印图片'),
+('31','watermark_pic','','2','255','水印图片'),
 ('32','watermark_position','4','2','255','水印位置'),
 ('33','message_verify','1','2','255','留言审核'),
 ('34','form_check_code','1','2','255','表单验证码'),
@@ -1024,7 +1024,7 @@ CREATE TABLE `ay_site` (
 --
 
 INSERT INTO `ay_site` (`id`,`acode`,`title`,`subtitle`,`domain`,`logo`,`keywords`,`description`,`icp`,`theme`,`statistical`,`copyright`) VALUES
-('1','cn','PbootCMS-Go','Go 企业网站内容管理系统','','/static/images/logo.png','pbootcms-go,cms','PbootCMS-Go','','default','','Copyright © PbootCMS-Go All Rights Reserved.');
+('1','cn','PbootCMS-Go','Go 企业网站内容管理系统','','','pbootcms-go,cms','PbootCMS-Go','','default','','Copyright © PbootCMS-Go All Rights Reserved.');
 
 -- --------------------------------------------------------
 

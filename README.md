@@ -59,7 +59,7 @@
 
 再叠加上述特征，站点一旦被识别为该类系统，弱口令尝试、已知问题上的自动化检测就会对准它。
 
-本系统已覆盖：首次 `admin_path` / `cookie_salt` 自动生成、不发品牌头、Cookie 名由盐派生、可一键重置路径/盐/库名、默认图标已非官方 Pboot 包。站点上线后仍建议换成自己的 favicon / Logo，避免所有 Gboot 站共用同一图标哈希。
+本系统已覆盖：首次 `admin_path` / `cookie_salt` 自动生成、不发品牌头、Cookie 名由盐派生、可一键重置路径/盐/库名；**不附带默认 favicon / Logo**（避免图标哈希指纹）。站点按需自行放置图标。
 
 **认出之后的常见利用**
 
@@ -72,7 +72,7 @@
 
 | 风险点 | 本系统做法 |
 | --- | --- |
-| 扫固定 `/admin`、固定 Cookie 名 / 产品头 / 默认 favicon | 随机 `admin_path` + `cookie_salt`；**不发**品牌 `X-Powered-By`；Cookie 名为盐派生短哈希；更换默认 `favicon.ico`；可一键重置指纹 |
+| 扫固定 `/admin`、固定 Cookie 名 / 产品头 / 默认 favicon | 随机 `admin_path` + `cookie_salt`；**不发**品牌 `X-Powered-By`；Cookie 名为盐派生短哈希；**不提供**默认 `favicon.ico` / Logo；可一键重置指纹 |
 | 搜索 / 筛选等拼进 SQL | Ent 参数化 + 字段白名单；取值不拼进语句字符串 |
 | `{pboot:if}` 等解析导致写文件或执行代码 | 条件仅安全表达式求值（`textmod.Truth`）；无 `eval`；无 PHP 解释器 |
 | 往缓存 / 上传目录放脚本再访问 | 扩展名白名单 + 登录/CSRF；静态只下载、不执行代码 |

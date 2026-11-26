@@ -651,7 +651,7 @@ func enrichMember(a *app.App, m map[string]string) map[string]string {
 	m["lastlogintime"] = m["last_login_time"]
 	m["lastloginip"] = long2ipMember(m["last_login_ip"])
 	if m["headpic"] == "" {
-		m["headpic"] = "/apps/admin/view/default/images/logo.png"
+		m["headpic"] = "/static/images/nopic.png"
 	}
 	if m["gname"] == "" && m["gid"] != "" {
 		rows, _ := a.DB.Maps("SELECT gname FROM ay_member_group WHERE id=?", m["gid"])

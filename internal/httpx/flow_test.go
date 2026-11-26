@@ -972,12 +972,8 @@ func mustURL(s string) *url.URL {
 	return u
 }
 
-var twonavTag = regexp.MustCompile(`\{/?pboot:2nav[^}]*\}`)
-
 func leftover(s string) string {
-	// shortcut: {pboot:2nav} unsupported until nested-nav parity
-	s = twonavTag.ReplaceAllString(s, "")
-	for _, n := range []string{"{pboot:", "{content:", "[list:", "[slide:", "[nav:", "[select:", "[comment:"} {
+	for _, n := range []string{"{pboot:", "{content:", "[list:", "[slide:", "[nav:", "[2nav:", "[select:", "[comment:"} {
 		if i := strings.Index(s, n); i >= 0 {
 			a := i - 30
 			if a < 0 {

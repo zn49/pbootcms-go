@@ -54,7 +54,7 @@ type Ctx struct {
 
 var (
 	pairNames = map[string]bool{
-		"list": true, "nav": true, "sort": true, "slide": true, "content": true,
+		"list": true, "nav": true, "2nav": true, "3nav": true, "sort": true, "slide": true, "content": true,
 		"link": true, "message": true, "search": true, "select": true, "tags": true,
 		"comment": true, "commentsub": true, "mycomment": true, "loop": true, "pics": true,
 	}
@@ -188,8 +188,15 @@ func findPair(s string) (name, attrs, inner string, start, end int, ok bool) {
 
 func readName(s string) (string, int) {
 	i := 0
+	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
+		i++
+	}
+	letters := i
 	for i < len(s) && ((s[i] >= 'a' && s[i] <= 'z') || (s[i] >= 'A' && s[i] <= 'Z')) {
 		i++
+	}
+	if i == letters {
+		return "", 0
 	}
 	return s[:i], i
 }
@@ -255,8 +262,8 @@ func expand(name, attrs, inner string, ctx *Ctx) string {
 		return expandList(p, inner, ctx, false)
 	case "search":
 		return expandList(p, inner, ctx, true)
-	case "nav":
-		return expandNav(p, inner, ctx)
+	case "nav", "2nav", "3nav":
+		return expandNav(name, p, inner, ctx)
 	case "sort":
 		return expandSort(p, inner, ctx)
 	case "slide":
@@ -404,6 +411,11 @@ func contentItem(r map[string]string, ctx *Ctx) map[string]string {
 	item := cloneMap(r)
 	item["link"] = ctx.Rules.Content(r["sortfilename"], r["urlname"], r["scode"], r["id"], r["filename"])
 	item["sortlink"] = ctx.Rules.Sort(r["sortfilename"], r["urlname"], r["scode"])
+	if strings.TrimSpace(item["ico"]) != "" {
+		item["isico"] = "1"
+	} else {
+		item["isico"] = "0"
+	}
 	if item["ico"] == "" {
 		item["ico"] = "/static/images/nopic.png"
 	}
@@ -412,7 +424,10 @@ func contentItem(r map[string]string, ctx *Ctx) map[string]string {
 	return item
 }
 
-func expandNav(p map[string]string, inner string, ctx *Ctx) string {
+func expandNav(prefix string, p map[string]string, inner string, ctx *Ctx) string {
+	if prefix == "" {
+		prefix = "nav"
+	}
 	parent := p["parent"]
 	if parent == "" {
 		parent = "0"
@@ -435,22 +450,44 @@ func expandNav(p map[string]string, inner string, ctx *Ctx) string {
 	if num > 0 && len(items) > num {
 		items = items[:num]
 	}
-	return loopItems("nav", inner, items, ctx)
+	return loopItems(prefix, inner, items, ctx)
 }
 
 func expandSort(p map[string]string, inner string, ctx *Ctx) string {
-	sc := p["scode"]
-	var row map[string]string
-	for _, s := range ctx.Sorts {
-		if s["scode"] == sc {
-			row = s
-			break
+	sc := strings.TrimSpace(p["scode"])
+	num := domain.Atoi(p["num"], 0)
+	var items []map[string]string
+	if strings.Contains(sc, ",") {
+		for _, part := range strings.Split(sc, ",") {
+			part = strings.TrimSpace(part)
+			if part == "" {
+				continue
+			}
+			for _, s := range ctx.Sorts {
+				if s["status"] == "0" {
+					continue
+				}
+				if s["scode"] == part {
+					items = append(items, sortItem(s, ctx))
+					break
+				}
+			}
+		}
+	} else if sc != "" {
+		for _, s := range ctx.Sorts {
+			if s["scode"] == sc {
+				items = append(items, sortItem(s, ctx))
+				break
+			}
 		}
 	}
-	if row == nil {
+	if num > 0 && len(items) > num {
+		items = items[:num]
+	}
+	if len(items) == 0 {
 		return ""
 	}
-	return loopItems("sort", inner, []map[string]string{sortItem(row, ctx)}, ctx)
+	return loopItems("sort", inner, items, ctx)
 }
 
 func sortItem(s map[string]string, ctx *Ctx) map[string]string {
@@ -470,9 +507,13 @@ func sortItem(s map[string]string, ctx *Ctx) map[string]string {
 			un = tm["urlname"]
 		}
 		item["toplink"] = ctx.Rules.Sort(top["filename"], un, top["scode"])
-		item["toprows"] = strconv.Itoa(domain.CountContents(ctx.DB, ctx.Acode, domain.Descendants(ctx.Sorts, top["scode"])))
+		if ctx.DB != nil {
+			item["toprows"] = strconv.Itoa(domain.CountContents(ctx.DB, ctx.Acode, domain.Descendants(ctx.Sorts, top["scode"])))
+		}
 	}
-	item["rows"] = strconv.Itoa(domain.CountContents(ctx.DB, ctx.Acode, domain.Descendants(ctx.Sorts, s["scode"])))
+	if ctx.DB != nil {
+		item["rows"] = strconv.Itoa(domain.CountContents(ctx.DB, ctx.Acode, domain.Descendants(ctx.Sorts, s["scode"])))
+	}
 	return item
 }
 
@@ -1230,9 +1271,12 @@ func findIf(s string) (start, end int, cond, inner, els string, ok bool) {
 			continue
 		}
 		inner, els = chunk, ""
-		if ep := strings.Index(chunk, "{else}"); ep >= 0 {
+		if ep := strings.Index(chunk, "{pboot:else}"); ep >= 0 {
 			inner = chunk[:ep]
-			els = chunk[ep+6:]
+			els = chunk[ep+len("{pboot:else}"):]
+		} else if ep := strings.Index(chunk, "{else}"); ep >= 0 {
+			inner = chunk[:ep]
+			els = chunk[ep+len("{else}"):]
 		}
 		return j, bodyStart + rel + len(closeTag), cond, inner, els, true
 	}

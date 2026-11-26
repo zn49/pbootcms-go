@@ -38,8 +38,9 @@ func TestCompleteFresh(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/install", nil)
 	Serve(a, rec, req)
-	if rec.Code != 200 || !strings.Contains(rec.Body.String(), "安装 PbootCMS-Go") {
-		t.Fatalf("GET install: %d %s", rec.Code, rec.Body.String())
+	body := rec.Body.String()
+	if rec.Code != 200 || !strings.Contains(body, "全新安装") || !strings.Contains(body, "导入已有库") {
+		t.Fatalf("GET install: %d %s", rec.Code, body)
 	}
 
 	path, plain, err := Complete(a, Input{
@@ -81,6 +82,50 @@ func TestCompleteFresh(t *testing.T) {
 	// second complete fails
 	if _, _, err := Complete(a, Input{Title: "x", Username: "boss", Password: "Secret99", Confirm: "Secret99", Driver: "sqlite"}); err == nil {
 		t.Fatal("expected already installed")
+	}
+}
+
+func TestCompleteImport(t *testing.T) {
+	repo := filepath.Join("..", "..")
+	siteSrc := filepath.Join(repo, "site")
+	sqlSrc := filepath.Join(siteSrc, "static", "backup", "sql", "pbootcms.sql")
+	if _, err := os.Stat(sqlSrc); err != nil {
+		t.Skip("no schema sql")
+	}
+	dir := t.TempDir()
+	root := filepath.Join(dir, "site")
+	mustCopyTree(t, filepath.Join(siteSrc, "static", "backup", "sql"), filepath.Join(root, "static", "backup", "sql"))
+	dbPath := filepath.Join(root, "data", "exist.db")
+	cfgPath := filepath.Join(dir, "config.json")
+	a := app.New(config.File{Addr: ":0", Driver: "sqlite", DSN: dbPath, SiteRoot: root})
+	a.CfgPath = cfgPath
+	_, _, err := Complete(a, Input{
+		Title: "原站", Username: "boss", Password: "Secret99", Confirm: "Secret99",
+		Addr: ":0", Driver: "sqlite", SQLitePath: dbPath,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = a.ClearBootstrap()
+	_ = os.Remove(LockPath(root))
+	_ = os.Remove(cfgPath)
+
+	a2 := app.New(config.File{Addr: ":0", Driver: "sqlite", DSN: dbPath, SiteRoot: root})
+	a2.CfgPath = cfgPath
+	path, err := CompleteImport(a2, Input{Mode: "import", Addr: ":0", Driver: "sqlite", SQLitePath: dbPath})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = a2.ClearBootstrap() })
+	if path == "" || path[0] != '/' {
+		t.Fatalf("admin path %q", path)
+	}
+	if !Locked(root) {
+		t.Fatal("expected lock")
+	}
+	one, err := a2.DB.Ent.User.Query().Where(entuser.IDEQ(1)).Only(context.Background())
+	if err != nil || one.Username != "boss" {
+		t.Fatalf("admin should stay %#v %v", one, err)
 	}
 }
 

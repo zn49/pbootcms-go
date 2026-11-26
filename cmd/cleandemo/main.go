@@ -94,7 +94,7 @@ func cleanSQL(path string) error {
 
 	siteRe := regexp.MustCompile(`(?s)INSERT INTO \` + "`" + `ay_site\` + "`" + ` \(.*?\) VALUES\s*\n\([^;]+\)\s*;`)
 	s = siteRe.ReplaceAllString(s, "INSERT INTO `ay_site` (`id`,`acode`,`title`,`subtitle`,`domain`,`logo`,`keywords`,`description`,`icp`,`theme`,`statistical`,`copyright`) VALUES\n"+
-		"('1','cn','PbootCMS-Go','Go 企业网站内容管理系统','','/static/images/logo.png','pbootcms-go,cms','PbootCMS-Go','','default','','Copyright © PbootCMS-Go All Rights Reserved.');")
+		"('1','cn','PbootCMS-Go','Go 企业网站内容管理系统','','','pbootcms-go,cms','PbootCMS-Go','','default','','Copyright © PbootCMS-Go All Rights Reserved.');")
 
 	coRe := regexp.MustCompile(`(?s)INSERT INTO \` + "`" + `ay_company\` + "`" + ` \(.*?\) VALUES\s*\n\([^;]+\)\s*;`)
 	s = coRe.ReplaceAllString(s, "INSERT INTO `ay_company` (`id`,`acode`,`name`,`address`,`postcode`,`contact`,`mobile`,`phone`,`fax`,`email`,`qq`,`weixin`,`blicense`,`other`) VALUES\n"+

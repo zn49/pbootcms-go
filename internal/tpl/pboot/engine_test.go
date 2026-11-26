@@ -37,6 +37,54 @@ func TestRenderSnippet(t *testing.T) {
 	}
 }
 
+func TestMultiSortAndElseIsico(t *testing.T) {
+	ctx := &Ctx{
+		Rules: urlx.Rules{Type: 3, Suffix: ".html", Break: "_"},
+		Sorts: []map[string]string{
+			{"scode": "16", "pcode": "15", "name": "A", "status": "1", "filename": "fa1", "mcode": "1", "def1": "descA", "ico": "/a.jpg"},
+			{"scode": "17", "pcode": "15", "name": "B", "status": "1", "filename": "fa2", "mcode": "1", "def1": "descB", "ico": "/b.jpg"},
+		},
+	}
+	out := Render(`{pboot:sort scode=16,17 num=2}([sort:name]|[sort:def1]){/pboot:sort}`, ctx)
+	if !strings.Contains(out, "(A|descA)") || !strings.Contains(out, "(B|descB)") {
+		t.Fatalf("multi sort: %s", out)
+	}
+	item := contentItem(map[string]string{"id": "1", "scode": "1", "ico": "/x.png", "filename": ""}, ctx)
+	if item["isico"] != "1" {
+		t.Fatalf("isico want 1 got %q", item["isico"])
+	}
+	empty := contentItem(map[string]string{"id": "2", "scode": "1", "ico": "", "filename": ""}, ctx)
+	if empty["isico"] != "0" || empty["ico"] != "/static/images/nopic.png" {
+		t.Fatalf("empty ico: %#v", empty)
+	}
+	ifOut := Render(`{pboot:if('1'=='1')}YES{pboot:else}NO{/pboot:if}`, ctx)
+	if ifOut != "YES" {
+		t.Fatalf("pboot:else true branch: %q", ifOut)
+	}
+	ifOut = Render(`{pboot:if('0'=='1')}YES{pboot:else}NO{/pboot:if}`, ctx)
+	if ifOut != "NO" {
+		t.Fatalf("pboot:else false branch: %q", ifOut)
+	}
+}
+
+func TestTwoNav(t *testing.T) {
+	ctx := &Ctx{
+		Rules: urlx.Rules{Type: 3, Suffix: ".html", Break: "_"},
+		Sorts: []map[string]string{
+			{"scode": "1", "pcode": "0", "name": "Top", "status": "1", "filename": "top", "mcode": "1"},
+			{"scode": "15", "pcode": "1", "name": "ChildA", "status": "1", "filename": "a", "mcode": "1"},
+			{"scode": "16", "pcode": "1", "name": "ChildB", "status": "1", "filename": "b", "mcode": "1"},
+		},
+	}
+	out := Render(`{pboot:nav parent=0}<b>[nav:name]</b>{pboot:2nav parent=[nav:scode]}([2nav:name]){/pboot:2nav}{/pboot:nav}`, ctx)
+	if strings.Contains(out, "{pboot:2nav") || strings.Contains(out, "[2nav:") {
+		t.Fatalf("2nav not expanded: %s", out)
+	}
+	if !strings.Contains(out, "(ChildA)") || !strings.Contains(out, "(ChildB)") {
+		t.Fatalf("missing children: %s", out)
+	}
+}
+
 func openSQL(t *testing.T) *store.DB {
 	t.Helper()
 	db, err := store.Open("sqlite", filepath.Join("..", "..", "..", "site", "data", "pbootcms.db"), filepath.Join("..", "..", "..", "site"), "")
