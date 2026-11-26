@@ -373,7 +373,7 @@ sudo systemctl start gbootcms
 **从 GHCR 拉镜像（推荐）**
 
 ```bash
-docker pull ghcr.io/zn49/gbootcms:v0.1.0
+docker pull ghcr.io/zn49/pbootcms-go:v0.1.0
 # 或 :latest
 ```
 
@@ -382,7 +382,7 @@ docker pull ghcr.io/zn49/gbootcms:v0.1.0
 ```yaml
 services:
   gbootcms:
-    image: ghcr.io/zn49/gbootcms:v0.1.0
+    image: ghcr.io/zn49/pbootcms-go:v0.1.0
     # build: .    # 使用已发布镜像时注释掉
 ```
 
@@ -394,22 +394,22 @@ services:
 2. 导入：
 
 ```bash
-gunzip -c gbootcms-v0.1.0-docker-linux-amd64.tar.gz | docker load
-docker images   # 应看到 gbootcms:v0.1.0
+gunzip -c pbootcms-go-v0.1.0-docker-linux-amd64.tar.gz | docker load
+docker images   # 应看到 pbootcms-go:v0.1.0
 ```
 
-compose 中设 `image: gbootcms:v0.1.0`，不要 `build`。同页还可下各平台二进制 `gbootcms-*`，按上文「本地 / 二进制部署」安装。
+compose 中设 `image: ghcr.io/zn49/pbootcms-go:v0.1.0`，不要 `build`。同页还可下各平台二进制 `gbootcms-*`，按上文「本地 / 二进制部署」安装。
 
 **本机构建**
 
 ```bash
-git clone <本仓库地址> gbootcms
-cd gbootcms
+git clone https://github.com/zn49/pbootcms-go.git
+cd pbootcms-go
 docker compose build
 # 或不经 Docker：go build -o gbootcms ./cmd/gbootcms
 ```
 
-发版产物（镜像推 GHCR、Release 附件）由 [`.github/workflows/release.yml`](.github/workflows/release.yml) 在打 `v*` 标签时生成；把源码托管在能跑该工作流的平台（如 GitHub）即可。
+发版产物（镜像推 GHCR、Release 附件）由 [`.github/workflows/release.yml`](.github/workflows/release.yml) 在打 `v*` 标签时生成。
 
 #### 2. 数据卷与权限
 
