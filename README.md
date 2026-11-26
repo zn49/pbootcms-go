@@ -1,4 +1,4 @@
-# GbootCMS
+# PbootCMS-Go
 
 用 Go 写的类 PbootCMS 建站系统：熟悉的标签与后台习惯，默认更安全、可审计、可容器化；Pboot 站数据尽量可迁。
 
@@ -93,7 +93,7 @@
 ```bash
 cp config.example.json config.json
 # 按需修改 config.json 后启动：
-go run ./cmd/gbootcms
+go run ./cmd/pbootcms-go
 ```
 
 `config.json` 示例：
@@ -102,7 +102,7 @@ go run ./cmd/gbootcms
 {
   "addr": ":8080",
   "driver": "sqlite",
-  "dsn": "site/data/gbootcms.db",
+  "dsn": "site/data/pbootcms.db",
   "site_root": "site",
   "admin_path": "auto",
   "cookie_salt": ""
@@ -117,7 +117,7 @@ go run ./cmd/gbootcms
 仓库里常改的部分：
 
 ```
-cmd/gbootcms/   程序入口
+cmd/pbootcms-go/   程序入口
 internal/       HTTP、后台、模板、鉴权等
 docker/         容器相关
 config.json     本地配置（勿把真实盐与后台路径提交到公开仓库）
@@ -131,21 +131,21 @@ config.json     本地配置（勿把真实盐与后台路径提交到公开仓�
 
 ### 本地 / 二进制部署
 
-下面以 Linux 为例（路径可按机器调整）。假设安装目录为 `/opt/gbootcms`，用专用用户 `gboot` 运行。
+下面以 Linux 为例（路径可按机器调整）。假设安装目录为 `/opt/pbootcms-go`，用专用用户 `gboot` 运行。
 
 #### 1. 准备目录
 
 ```bash
 sudo useradd -r -s /usr/sbin/nologin gboot   # 若已有用户可跳过
-sudo mkdir -p /opt/gbootcms
-sudo chown gboot:gboot /opt/gbootcms
+sudo mkdir -p /opt/pbootcms-go
+sudo chown gboot:gboot /opt/pbootcms-go
 ```
 
 推荐布局：
 
 ```text
-/opt/gbootcms/
-  gbootcms          # 可执行文件
+/opt/pbootcms-go/
+  pbootcms-go      # 可执行文件
   config.json       # 进程配置
   site/             # site_root：模板、静态、数据
     template/
@@ -163,31 +163,31 @@ sudo chown gboot:gboot /opt/gbootcms
 在有 Go 的机器上：
 
 ```bash
-git clone <本仓库地址> gbootcms-src
-cd gbootcms-src
-go build -trimpath -ldflags="-s -w" -o gbootcms ./cmd/gbootcms
+git clone <本仓库地址> pbootcms-go-src
+cd pbootcms-go-src
+go build -trimpath -ldflags="-s -w" -o pbootcms-go ./cmd/pbootcms-go
 
-sudo install -o gboot -g gboot -m 755 gbootcms /opt/gbootcms/gbootcms
+sudo install -o gboot -g gboot -m 755 pbootcms-go /opt/pbootcms-go/pbootcms-go
 ```
 
 也可在本机交叉编译后拷上去，例如：
 
 ```bash
-GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o gbootcms ./cmd/gbootcms
-scp gbootcms user@server:/tmp/
-# 再在服务器上 install 到 /opt/gbootcms/
+GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o pbootcms-go ./cmd/pbootcms-go
+scp pbootcms-go user@server:/tmp/
+# 再在服务器上 install 到 /opt/pbootcms-go/
 ```
 
 #### 3. 写配置
 
-`/opt/gbootcms/config.json` 示例（SQLite）：
+`/opt/pbootcms-go/config.json` 示例（SQLite）：
 
 ```json
 {
   "addr": "127.0.0.1:8080",
   "driver": "sqlite",
-  "dsn": "/opt/gbootcms/site/data/gbootcms.db",
-  "site_root": "/opt/gbootcms/site",
+  "dsn": "/opt/pbootcms-go/site/data/pbootcms.db",
+  "site_root": "/opt/pbootcms-go/site",
   "admin_path": "auto",
   "cookie_salt": ""
 }
@@ -199,8 +199,8 @@ MySQL 示例（把 `driver` / `dsn` 换成实际库）：
 {
   "addr": "127.0.0.1:8080",
   "driver": "mysql",
-  "dsn": "user:pass@tcp(127.0.0.1:3306)/gbootcms?parseTime=true&charset=utf8mb4",
-  "site_root": "/opt/gbootcms/site",
+  "dsn": "user:pass@tcp(127.0.0.1:3306)/pbootcms?parseTime=true&charset=utf8mb4",
+  "site_root": "/opt/pbootcms-go/site",
   "admin_path": "auto",
   "cookie_salt": ""
 }
@@ -213,22 +213,22 @@ MySQL 示例（把 `driver` / `dsn` 换成实际库）：
 - 配置文件权限建议：`chmod 600 config.json`，属主 `gboot`。
 
 ```bash
-sudo chown gboot:gboot /opt/gbootcms/config.json
-sudo chmod 600 /opt/gbootcms/config.json
+sudo chown gboot:gboot /opt/pbootcms-go/config.json
+sudo chmod 600 /opt/pbootcms-go/config.json
 ```
 
 #### 4. 权限
 
 ```bash
-sudo chown -R gboot:gboot /opt/gbootcms/site
-sudo find /opt/gbootcms/site -type d -exec chmod 755 {} \;
-sudo find /opt/gbootcms/site -type f -exec chmod 644 {} \;
+sudo chown -R gboot:gboot /opt/pbootcms-go/site
+sudo find /opt/pbootcms-go/site -type d -exec chmod 755 {} \;
+sudo find /opt/pbootcms-go/site -type f -exec chmod 644 {} \;
 # 运行时要写的目录
-sudo chmod 750 /opt/gbootcms/site/data \
-  /opt/gbootcms/site/static/upload \
-  /opt/gbootcms/site/static/backup
+sudo chmod 750 /opt/pbootcms-go/site/data \
+  /opt/pbootcms-go/site/static/upload \
+  /opt/pbootcms-go/site/static/backup
 # SQLite 库文件（若已存在）
-sudo chmod 600 /opt/gbootcms/site/data/*.db 2>/dev/null || true
+sudo chmod 600 /opt/pbootcms-go/site/data/*.db 2>/dev/null || true
 ```
 
 程序启动时还会尽量把敏感路径收到类似权限；部署时先显式设好更稳妥。
@@ -236,29 +236,29 @@ sudo chmod 600 /opt/gbootcms/site/data/*.db 2>/dev/null || true
 #### 5. 先手动跑通
 
 ```bash
-cd /opt/gbootcms
-sudo -u gboot ./gbootcms
-# 或：sudo -u gboot env GBOOT_CONFIG=/opt/gbootcms/config.json ./gbootcms
+cd /opt/pbootcms-go
+sudo -u gboot ./pbootcms-go
+# 或：sudo -u gboot env GBOOT_CONFIG=/opt/pbootcms-go/config.json ./pbootcms-go
 ```
 
 浏览器访问 `http://服务器IP:8080/`（若只绑了 `127.0.0.1`，先在本机 curl 或临时改 `addr`）。看日志里打印的 `admin=` 路径，记下后台地址并完成首次登录 / 改密。确认无误后 `Ctrl+C` 停掉，再交给 systemd。
 
 #### 6. systemd 保活
 
-`/etc/systemd/system/gbootcms.service`：
+`/etc/systemd/system/pbootcms-go.service`：
 
 ```ini
 [Unit]
-Description=GbootCMS
+Description=PbootCMS-Go
 After=network.target
 
 [Service]
 Type=simple
 User=gboot
 Group=gboot
-WorkingDirectory=/opt/gbootcms
-ExecStart=/opt/gbootcms/gbootcms
-Environment=GBOOT_CONFIG=/opt/gbootcms/config.json
+WorkingDirectory=/opt/pbootcms-go
+ExecStart=/opt/pbootcms-go/pbootcms-go
+Environment=GBOOT_CONFIG=/opt/pbootcms-go/config.json
 Restart=on-failure
 RestartSec=3
 NoNewPrivileges=true
@@ -270,9 +270,9 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now gbootcms
-sudo systemctl status gbootcms
-sudo journalctl -u gbootcms -f
+sudo systemctl enable --now pbootcms-go
+sudo systemctl status pbootcms-go
+sudo journalctl -u pbootcms-go -f
 ```
 
 #### 7. Nginx 反代（HTTPS）
@@ -344,9 +344,9 @@ server {
 
 ```bash
 # 编译新二进制后：
-sudo systemctl stop gbootcms
-sudo install -o gboot -g gboot -m 755 gbootcms /opt/gbootcms/gbootcms
-sudo systemctl start gbootcms
+sudo systemctl stop pbootcms-go
+sudo install -o gboot -g gboot -m 755 pbootcms-go /opt/pbootcms-go/pbootcms-go
+sudo systemctl start pbootcms-go
 ```
 
 升级前备份 `config.json` 与 `site/data`（及 MySQL 库）。
@@ -381,7 +381,7 @@ docker pull ghcr.io/zn49/pbootcms-go:v0.1.0
 
 ```yaml
 services:
-  gbootcms:
+  pbootcms-go:
     image: ghcr.io/zn49/pbootcms-go:v0.1.0
     # build: .    # 使用已发布镜像时注释掉
 ```
@@ -390,7 +390,7 @@ services:
 
 **Release 离线包（无外网拉 GHCR 时）**
 
-1. 打开仓库 **Releases**（或发布页），下载 `gbootcms-<版本>-docker-linux-amd64.tar.gz` 与 `SHA256SUMS.txt`，校验哈希。
+1. 打开仓库 **Releases**（或发布页），下载 `pbootcms-go-<版本>-docker-linux-amd64.tar.gz` 与 `SHA256SUMS.txt`，校验哈希。
 2. 导入：
 
 ```bash
@@ -398,7 +398,7 @@ gunzip -c pbootcms-go-v0.1.0-docker-linux-amd64.tar.gz | docker load
 docker images   # 应看到 pbootcms-go:v0.1.0
 ```
 
-compose 中设 `image: ghcr.io/zn49/pbootcms-go:v0.1.0`，不要 `build`。同页还可下各平台二进制 `gbootcms-*`，按上文「本地 / 二进制部署」安装。
+compose 中设 `image: ghcr.io/zn49/pbootcms-go:v0.1.0`，不要 `build`。同页还可下各平台二进制 `pbootcms-go-*`，按上文「本地 / 二进制部署」安装。
 
 **本机构建**
 
@@ -406,7 +406,7 @@ compose 中设 `image: ghcr.io/zn49/pbootcms-go:v0.1.0`，不要 `build`。同�
 git clone https://github.com/zn49/pbootcms-go.git
 cd pbootcms-go
 docker compose build
-# 或不经 Docker：go build -o gbootcms ./cmd/gbootcms
+# 或不经 Docker：go build -o pbootcms-go ./cmd/pbootcms-go
 ```
 
 发版产物（镜像推 GHCR、Release 附件）由 [`.github/workflows/release.yml`](.github/workflows/release.yml) 在打 `v*` 标签时生成。
@@ -426,18 +426,18 @@ compose 默认挂三个命名卷（容器内路径）：
 若改用**绑定挂载**宿主机目录，请先在宿主机对齐 uid：
 
 ```bash
-sudo mkdir -p /var/lib/gbootcms/{data,upload,backup}
-sudo chown -R 10001:10001 /var/lib/gbootcms
-sudo chmod 750 /var/lib/gbootcms/data /var/lib/gbootcms/upload /var/lib/gbootcms/backup
+sudo mkdir -p /var/lib/pbootcms-go/{data,upload,backup}
+sudo chown -R 10001:10001 /var/lib/pbootcms-go
+sudo chmod 750 /var/lib/pbootcms-go/data /var/lib/pbootcms-go/upload /var/lib/pbootcms-go/backup
 ```
 
 compose 片段示例：
 
 ```yaml
 volumes:
-  - /var/lib/gbootcms/data:/app/site/data
-  - /var/lib/gbootcms/upload:/app/site/static/upload
-  - /var/lib/gbootcms/backup:/app/site/static/backup
+  - /var/lib/pbootcms-go/data:/app/site/data
+  - /var/lib/pbootcms-go/upload:/app/site/static/upload
+  - /var/lib/pbootcms-go/backup:/app/site/static/backup
 ```
 
 不要把宿主机整个 `site/` 以 777 挂进容器；模板等只读内容可用镜像内文件，或只读挂载。
@@ -456,7 +456,7 @@ GBOOT_ADDR=:8080
 # GBOOT_COOKIE_SALT=换成足够长的随机串
 # MySQL/Pg 也可在安装页填写；或用环境变量：
 # GBOOT_DRIVER=mysql
-# GBOOT_DSN=user:pass@tcp(db:3306)/gbootcms?parseTime=true&charset=utf8mb4
+# GBOOT_DSN=user:pass@tcp(db:3306)/pbootcms?parseTime=true&charset=utf8mb4
 ```
 
 在 `docker-compose.yml` 的 `environment` 中引用，或 `env_file: .env`。
@@ -464,10 +464,10 @@ GBOOT_ADDR=:8080
 #### 4. 启动与验证
 
 ```bash
-cd gbootcms
+cd pbootcms-go
 docker compose up -d          # 本机构建时用 up -d --build
 docker compose ps
-docker compose logs -f gbootcms
+docker compose logs -f pbootcms-go
 ```
 
 浏览器打开 `http://127.0.0.1:8080/` → 跳转 `/install` 完成安装，保存完成页上的后台路径与密码。已装过则直接进站点。Nginx 反代时 `proxy_pass` 指向 `127.0.0.1:8080`（或 compose 映射端口）。
@@ -477,9 +477,9 @@ docker compose logs -f gbootcms
 ```bash
 # 将原站 data / upload 拷进卷（示例：命名卷在 Docker 数据目录，或用临时容器）
 docker compose stop
-# 若用绑定挂载，直接拷到 /var/lib/gbootcms/...
+# 若用绑定挂载，直接拷到 /var/lib/pbootcms-go/...
 # 命名卷可用：
-docker run --rm -v gbootcms_gboot_data:/data -v /path/to/backup:/backup alpine \
+docker run --rm -v pbootcms-go_gboot_data:/data -v /path/to/backup:/backup alpine \
   sh -c 'cp -a /backup/data/. /data/ && chown -R 10001:10001 /data && chmod 750 /data'
 docker compose start
 ```
@@ -494,7 +494,7 @@ docker compose pull
 docker compose up -d
 # 或本机构建：git pull && docker compose up -d --build
 # 备份卷（示例）
-docker run --rm -v gbootcms_gboot_data:/data -v $PWD/backup:/backup alpine \
+docker run --rm -v pbootcms-go_gboot_data:/data -v $PWD/backup:/backup alpine \
   tar czf /backup/data-$(date +%F).tgz -C /data .
 ```
 

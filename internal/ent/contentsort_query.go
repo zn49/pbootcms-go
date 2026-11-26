@@ -5,8 +5,8 @@ package ent
 import (
 	"context"
 	"fmt"
-	"gbootcms/internal/ent/contentsort"
-	"gbootcms/internal/ent/predicate"
+	"github.com/zn49/pbootcms-go/internal/ent/contentsort"
+	"github.com/zn49/pbootcms-go/internal/ent/predicate"
 	"math"
 
 	"entgo.io/ent"

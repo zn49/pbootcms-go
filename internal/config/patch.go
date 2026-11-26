@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 // Patch merges fields into config JSON on disk (preserves unrelated keys / relative paths).

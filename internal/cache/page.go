@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 type Page struct {

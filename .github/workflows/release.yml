@@ -45,14 +45,14 @@ jobs:
           CGO_ENABLED: "0"
           EXT: ${{ matrix.ext }}
         run: |
-          out="gbootcms-${GOOS}-${GOARCH}${EXT}"
-          go build -trimpath -ldflags="-s -w" -o "$out" ./cmd/gbootcms
+          out="pbootcms-go-${GOOS}-${GOARCH}${EXT}"
+          go build -trimpath -ldflags="-s -w" -o "$out" ./cmd/pbootcms-go
           echo "OUT=$out" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v4
         with:
           name: bin-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: gbootcms-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }}
+          path: pbootcms-go-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }}
 
   docker:
     name: Build Docker image
@@ -129,9 +129,9 @@ jobs:
 
             | 文件 | 用途 |
             | --- | --- |
-            | `gbootcms-linux-amd64` 等 | 二进制直跑（见 README「本地 / 二进制部署」） |
-            | `gbootcms-*-docker-linux-amd64.tar.gz` | 离线 Docker 镜像，`docker load` 后使用 |
-            | GHCR | `ghcr.io/<owner>/gbootcms:${{ github.ref_name }}` 可直接 `docker pull` |
+            | `pbootcms-go-linux-amd64` 等 | 二进制直跑（见 README「本地 / 二进制部署」） |
+            | `pbootcms-go-*-docker-linux-amd64.tar.gz` | 离线 Docker 镜像，`docker load` 后使用 |
+            | GHCR | `ghcr.io/<owner>/pbootcms-go:${{ github.ref_name }}` 可直接 `docker pull` |
 
             Windows 二进制带 `.exe` 后缀。校验见 `SHA256SUMS.txt`。
         env:

@@ -12,14 +12,14 @@ import (
 	"strings"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/domain"
-	entmember "gbootcms/internal/ent/member"
-	"gbootcms/internal/ent/membercomment"
-	"gbootcms/internal/fsperm"
-	"gbootcms/internal/store"
-	"gbootcms/internal/urlx"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	entmember "github.com/zn49/pbootcms-go/internal/ent/member"
+	"github.com/zn49/pbootcms-go/internal/ent/membercomment"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/store"
+	"github.com/zn49/pbootcms-go/internal/urlx"
 )
 
 func member(a *app.App, w http.ResponseWriter, r *http.Request, acode string, h hit) bool {
@@ -580,7 +580,7 @@ func doSendEmail(a *app.App, w http.ResponseWriter, r *http.Request) {
 		s.Values["code"] = strings.ToLower(code)
 	}
 	_ = a.Front.Save(s)
-	subj := "【GbootCMS】您有新的验证码信息，请注意查收！"
+	subj := "【PbootCMS-Go】您有新的验证码信息，请注意查收！"
 	body := "您的验证码为：" + code
 	if err := sendMailTo(a, to, subj, body); err != nil {
 		JSON(w, 0, "发送失败，"+err.Error())

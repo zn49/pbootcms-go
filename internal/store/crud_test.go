@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"gbootcms/internal/ent/content"
-	"gbootcms/internal/ent/contentsort"
-	"gbootcms/internal/ent/label"
+	"github.com/zn49/pbootcms-go/internal/ent/content"
+	"github.com/zn49/pbootcms-go/internal/ent/contentsort"
+	"github.com/zn49/pbootcms-go/internal/ent/label"
 )
 
 func TestCRUDHelpersSQLite(t *testing.T) {

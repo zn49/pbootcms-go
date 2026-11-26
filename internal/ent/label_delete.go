@@ -4,8 +4,8 @@ package ent
 
 import (
 	"context"
-	"gbootcms/internal/ent/label"
-	"gbootcms/internal/ent/predicate"
+	"github.com/zn49/pbootcms-go/internal/ent/label"
+	"github.com/zn49/pbootcms-go/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

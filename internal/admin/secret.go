@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 const aiSecretNS = "|pbootcms_ai_secret_v1"

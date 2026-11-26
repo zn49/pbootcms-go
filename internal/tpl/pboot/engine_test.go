@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"gbootcms/internal/domain"
-	"gbootcms/internal/store"
-	"gbootcms/internal/urlx"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/store"
+	"github.com/zn49/pbootcms-go/internal/urlx"
 )
 
 func TestRenderSnippet(t *testing.T) {
@@ -32,14 +32,14 @@ func TestRenderSnippet(t *testing.T) {
 	if strings.Contains(html, "{pboot:slide") || strings.Contains(html, "{pboot:list") || strings.Contains(html, "{pboot:nav") {
 		t.Fatalf("unexpanded tag:\n%s", html[:min(500, len(html))])
 	}
-	if !strings.Contains(html, "GbootCMS") {
+	if !strings.Contains(html, "PbootCMS-Go") {
 		t.Fatal("missing site title")
 	}
 }
 
 func openSQL(t *testing.T) *store.DB {
 	t.Helper()
-	db, err := store.Open("sqlite", filepath.Join("..", "..", "..", "site", "data", "gbootcms.db"), filepath.Join("..", "..", "..", "site"), "")
+	db, err := store.Open("sqlite", filepath.Join("..", "..", "..", "site", "data", "pbootcms.db"), filepath.Join("..", "..", "..", "site"), "")
 	if err != nil {
 		t.Fatal(err)
 	}

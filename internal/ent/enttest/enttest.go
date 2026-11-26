@@ -5,11 +5,11 @@ package enttest
 import (
 	"context"
 
-	"gbootcms/internal/ent"
+	"github.com/zn49/pbootcms-go/internal/ent"
 	// required by schema hooks.
-	_ "gbootcms/internal/ent/runtime"
+	_ "github.com/zn49/pbootcms-go/internal/ent/runtime"
 
-	"gbootcms/internal/ent/migrate"
+	"github.com/zn49/pbootcms-go/internal/ent/migrate"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

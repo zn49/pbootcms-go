@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 func noteSpider(a *app.App, r *http.Request) {

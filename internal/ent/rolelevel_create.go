@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gbootcms/internal/ent/rolelevel"
+	"github.com/zn49/pbootcms-go/internal/ent/rolelevel"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"

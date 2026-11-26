@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gbootcms/internal/admin"
-	"gbootcms/internal/api"
-	"gbootcms/internal/app"
-	"gbootcms/internal/front"
-	"gbootcms/internal/install"
+	"github.com/zn49/pbootcms-go/internal/admin"
+	"github.com/zn49/pbootcms-go/internal/api"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/install"
 )
 
 func Listen(a *app.App) error {

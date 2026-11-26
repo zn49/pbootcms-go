@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"gbootcms/internal/ent/syslog"
+	"github.com/zn49/pbootcms-go/internal/ent/syslog"
 	"strings"
 
 	"entgo.io/ent"

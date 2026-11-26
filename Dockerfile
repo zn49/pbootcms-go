@@ -7,7 +7,7 @@ RUN apk add --no-cache git ca-certificates
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/gbootcms ./cmd/gbootcms
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/pbootcms-go ./cmd/pbootcms-go
 
 FROM alpine:3.21
 RUN apk add --no-cache ca-certificates tzdata su-exec \
@@ -17,12 +17,12 @@ RUN apk add --no-cache ca-certificates tzdata su-exec \
 	&& chown -R gboot:gboot /app
 WORKDIR /app
 
-COPY --from=build /out/gbootcms /app/gbootcms
+COPY --from=build /out/pbootcms-go /app/pbootcms-go
 COPY docker/config.docker.json /app/config.json
 COPY docker/entrypoint.sh /app/entrypoint.sh
 # site tree (templates/static/skin); writable dirs created/fixed at start
 COPY site/ /app/site/
-RUN chmod 755 /app/gbootcms /app/entrypoint.sh \
+RUN chmod 755 /app/pbootcms-go /app/entrypoint.sh \
 	&& chmod 600 /app/config.json \
 	&& rm -rf /app/site/data/cache /app/site/data/session /app/site/data/log \
 	&& find /app/site/data -maxdepth 1 -type f \( -name '*.db' -o -name '*.sqlite' -o -name 'install.lock' -o -name '.app_salt' -o -name 'gboot-config.json' \) -delete \

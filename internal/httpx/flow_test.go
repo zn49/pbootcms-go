@@ -21,30 +21,30 @@ import (
 
 	"context"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/config"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/ent/area"
-	"gbootcms/internal/ent/content"
-	"gbootcms/internal/ent/contentsort"
-	"gbootcms/internal/ent/form"
-	"gbootcms/internal/ent/member"
-	"gbootcms/internal/ent/membercomment"
-	"gbootcms/internal/ent/menu"
-	"gbootcms/internal/ent/model"
-	"gbootcms/internal/ent/role"
-	"gbootcms/internal/ent/slide"
-	entuser "gbootcms/internal/ent/user"
-	"gbootcms/internal/front"
-	"gbootcms/internal/store"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/config"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/ent/area"
+	"github.com/zn49/pbootcms-go/internal/ent/content"
+	"github.com/zn49/pbootcms-go/internal/ent/contentsort"
+	"github.com/zn49/pbootcms-go/internal/ent/form"
+	"github.com/zn49/pbootcms-go/internal/ent/member"
+	"github.com/zn49/pbootcms-go/internal/ent/membercomment"
+	"github.com/zn49/pbootcms-go/internal/ent/menu"
+	"github.com/zn49/pbootcms-go/internal/ent/model"
+	"github.com/zn49/pbootcms-go/internal/ent/role"
+	"github.com/zn49/pbootcms-go/internal/ent/slide"
+	entuser "github.com/zn49/pbootcms-go/internal/ent/user"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/store"
 )
 
 func TestSiteFlow(t *testing.T) {
 	root := filepath.Join("..", "..", "site")
-	src := filepath.Join(root, "data", "gbootcms.db")
+	src := filepath.Join(root, "data", "pbootcms.db")
 	dir := t.TempDir()
-	dst := filepath.Join(dir, "gbootcms.db")
+	dst := filepath.Join(dir, "pbootcms.db")
 	copyFile(t, src, dst)
 	a := app.New(config.File{Driver: "sqlite", DSN: dst, SiteRoot: root})
 	if err := a.Bootstrap(); err != nil {
@@ -64,7 +64,7 @@ func TestSiteFlow(t *testing.T) {
 	if bad := leftover(home); bad != "" {
 		t.Fatalf("home still has tags: %s", bad)
 	}
-	if !strings.Contains(home, "GbootCMS") {
+	if !strings.Contains(home, "PbootCMS-Go") {
 		t.Fatal("home missing site title")
 	}
 	now := time.Now()
@@ -289,10 +289,10 @@ func TestSiteFlow(t *testing.T) {
 		return srv.URL + path + sep + "appid=demo&timestamp=" + ts + "&signature=" + sig
 	}
 	site := get(t, pub, apiQ("/api/site"))
-	if !strings.Contains(site, `"code":1`) || !strings.Contains(site, "GbootCMS") {
+	if !strings.Contains(site, `"code":1`) || !strings.Contains(site, "PbootCMS-Go") {
 		t.Fatalf("api site: %s", site)
 	}
-	if name := get(t, pub, apiQ("/api/cms/site?name=title")); !strings.Contains(name, "GbootCMS") {
+	if name := get(t, pub, apiQ("/api/cms/site?name=title")); !strings.Contains(name, "PbootCMS-Go") {
 		t.Fatalf("api site name: %s", name)
 	}
 	if pos := get(t, pub, apiQ("/api/cms/position")); !strings.Contains(pos, "scode") {

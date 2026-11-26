@@ -5,8 +5,8 @@ package ent
 import (
 	"context"
 	"fmt"
-	"gbootcms/internal/ent/predicate"
-	"gbootcms/internal/ent/rolelevel"
+	"github.com/zn49/pbootcms-go/internal/ent/predicate"
+	"github.com/zn49/pbootcms-go/internal/ent/rolelevel"
 	"math"
 
 	"entgo.io/ent"

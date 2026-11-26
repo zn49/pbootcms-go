@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/front"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/front"
 )
 
 var aiCallLog sync.Map // username -> []int64 unix

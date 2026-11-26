@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/ent/member"
-	"gbootcms/internal/ent/membercomment"
-	"gbootcms/internal/store"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/ent/member"
+	"github.com/zn49/pbootcms-go/internal/ent/membercomment"
+	"github.com/zn49/pbootcms-go/internal/store"
 )
 
 func memberPage(a *app.App, w http.ResponseWriter, r *http.Request, sess *auth.Session, kv map[string]string, action string) {

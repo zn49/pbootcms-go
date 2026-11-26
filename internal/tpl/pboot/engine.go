@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
-	"gbootcms/internal/domain"
-	"gbootcms/internal/store"
-	"gbootcms/internal/textmod"
-	"gbootcms/internal/urlx"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/store"
+	"github.com/zn49/pbootcms-go/internal/textmod"
+	"github.com/zn49/pbootcms-go/internal/urlx"
 )
 
 // Page is the pager the list/search/message/comment tags fill.

@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/config"
-	"gbootcms/internal/store"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/config"
+	"github.com/zn49/pbootcms-go/internal/store"
 )
 
 func TestAiWriteLogRoundtrip(t *testing.T) {

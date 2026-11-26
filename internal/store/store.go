@@ -16,9 +16,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/v5/stdlib"
 
-	entg "gbootcms/internal/ent"
-	"gbootcms/internal/ent/sysconfig"
-	"gbootcms/internal/fsperm"
+	entg "github.com/zn49/pbootcms-go/internal/ent"
+	"github.com/zn49/pbootcms-go/internal/ent/sysconfig"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 // DB is the Ent client for the fixed PbootCMS tables, plus the sql handle

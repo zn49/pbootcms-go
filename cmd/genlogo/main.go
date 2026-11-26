@@ -1,4 +1,4 @@
-// Generates transparent GbootCMS logos (icon + full wordmark).
+// Generates transparent PbootCMS-Go logos (icon + full wordmark).
 package main
 
 import (

@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"gbootcms/internal/app"
+	"github.com/zn49/pbootcms-go/internal/app"
 )
 
 // Captcha writes a 4-digit PNG and stores it on the front session.
@@ -42,7 +42,7 @@ func QR(w http.ResponseWriter, r *http.Request) {
 		s = r.URL.Query().Get("data")
 	}
 	if s == "" {
-		s = "gbootcms"
+		s = "pbootcms-go"
 	}
 	h := fnv.New64a()
 	_, _ = h.Write([]byte(s))

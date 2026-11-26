@@ -33,8 +33,8 @@ if [ "$(id -u)" = "0" ]; then
 		chown gboot:gboot "$GBOOT_CONFIG" 2>/dev/null || true
 		chmod 600 "$GBOOT_CONFIG" 2>/dev/null || true
 	fi
-	exec su-exec gboot:gboot env GBOOT_CONFIG="${GBOOT_CONFIG:-$DATA_CFG}" /app/gbootcms
+	exec su-exec gboot:gboot env GBOOT_CONFIG="${GBOOT_CONFIG:-$DATA_CFG}" /app/pbootcms-go
 fi
 
 prepare_config
-exec /app/gbootcms
+exec /app/pbootcms-go

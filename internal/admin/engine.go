@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"gbootcms/internal/textmod"
+	"github.com/zn49/pbootcms-go/internal/textmod"
 )
 
 //go:embed view/*.html
@@ -161,7 +161,7 @@ func applyConsts(s string) string {
 	theme := "/apps/admin/view/default"
 	repl := map[string]string{
 		"{APP_THEME_DIR}": theme,
-		"{CMSNAME}":       "GbootCMS",
+		"{CMSNAME}":       "PbootCMS-Go",
 		"{APP_VERSION}":   "3.2.33",
 		"{RELEASE_TIME}":  "20251120",
 		"{SITE_DIR}":      siteDirConst,
@@ -603,7 +603,7 @@ func truth(cond string, d Data, row map[string]string) bool {
 		}
 		if name == "LICENSE" || name == "CMSNAME" {
 			if name == "CMSNAME" {
-				return lit("GbootCMS")
+				return lit("PbootCMS-Go")
 			}
 			return "3"
 		}

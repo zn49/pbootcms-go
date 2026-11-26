@@ -1,7 +1,7 @@
 {
   "addr": ":8080",
   "driver": "sqlite",
-  "dsn": "site/data/gbootcms.db",
+  "dsn": "site/data/pbootcms.db",
   "site_root": "site",
   "admin_path": "auto",
   "cookie_salt": ""

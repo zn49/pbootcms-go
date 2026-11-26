@@ -10,18 +10,18 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/ent/area"
-	"gbootcms/internal/ent/menu"
-	"gbootcms/internal/ent/role"
-	"gbootcms/internal/ent/rolelevel"
-	"gbootcms/internal/ent/syslog"
-	"gbootcms/internal/ent/user"
-	"gbootcms/internal/ent/userrole"
-	"gbootcms/internal/front"
-	"gbootcms/internal/store"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/ent/area"
+	"github.com/zn49/pbootcms-go/internal/ent/menu"
+	"github.com/zn49/pbootcms-go/internal/ent/role"
+	"github.com/zn49/pbootcms-go/internal/ent/rolelevel"
+	"github.com/zn49/pbootcms-go/internal/ent/syslog"
+	"github.com/zn49/pbootcms-go/internal/ent/user"
+	"github.com/zn49/pbootcms-go/internal/ent/userrole"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/store"
 )
 
 func systemBag(a *app.App, w http.ResponseWriter, r *http.Request, sess *auth.Session, ctrl string) Data {
@@ -1354,7 +1354,7 @@ func serverPage(a *app.App, w http.ResponseWriter, r *http.Request, sess *auth.S
 	host := r.Host
 	srv := map[string]string{
 		"php_os": runtime.GOOS, "php_version": runtime.Version(), "php_version_low": "", "php_min_version": "8.0",
-		"server_software": "gbootcms", "server_name": host, "server_port": "", "server_addr": "127.0.0.1",
+		"server_software": "pbootcms-go", "server_name": host, "server_port": "", "server_addr": "127.0.0.1",
 		"db_driver": a.DB.Driver, "upload_max_filesize": "20M", "post_max_size": "20M",
 		"http_host": host, "memory_limit": "-", "gd": "-",
 		"image_backend_config": "gd", "image_backend_effective": "gd",

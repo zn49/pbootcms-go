@@ -5,14 +5,14 @@ import (
 	"net/http"
 
 	"entgo.io/ent/dialect/sql"
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/ent/link"
-	"gbootcms/internal/ent/slide"
-	"gbootcms/internal/ent/tag"
-	"gbootcms/internal/front"
-	"gbootcms/internal/store"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/ent/link"
+	"github.com/zn49/pbootcms-go/internal/ent/slide"
+	"github.com/zn49/pbootcms-go/internal/ent/tag"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/store"
 )
 
 func crudDel(a *app.App, table, acode, id string) error {

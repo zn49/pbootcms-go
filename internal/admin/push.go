@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/front"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/front"
 )
 
 var indexnowKeyRe = regexp.MustCompile(`^[A-Za-z0-9\-]{8,128}$`)

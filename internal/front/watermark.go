@@ -15,7 +15,7 @@ import (
 // Watermark draws text onto a jpg/png file in place.
 func Watermark(path, text string) {
 	if text == "" {
-		text = "gbootcms"
+		text = "pbootcms-go"
 	}
 	f, err := os.Open(path)
 	if err != nil {

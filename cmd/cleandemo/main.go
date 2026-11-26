@@ -1,4 +1,4 @@
-// One-shot: strip Pboot demo rows from live DB + seed SQL, rebrand to GbootCMS.
+// One-shot: strip Pboot demo rows from live DB + seed SQL, rebrand to PbootCMS-Go.
 package main
 
 import (
@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	dbPath := "site/data/gbootcms.db"
+	dbPath := "site/data/pbootcms.db"
 	sqlPath := "site/static/backup/sql/pbootcms.sql"
 	if len(os.Args) > 1 {
 		dbPath = os.Args[1]
@@ -26,7 +26,7 @@ func main() {
 	if err := cleanSQL(sqlPath); err != nil {
 		fatal(err)
 	}
-	fmt.Println("demo cleared; branded GbootCMS:", dbPath, sqlPath)
+	fmt.Println("demo cleared; branded PbootCMS-Go:", dbPath, sqlPath)
 }
 
 func cleanDB(dsn string) error {
@@ -47,20 +47,20 @@ func cleanDB(dsn string) error {
 		`DELETE FROM ay_member`,
 		`DELETE FROM ay_content_sort`,
 		`UPDATE ay_site SET
-			title='GbootCMS',
+			title='PbootCMS-Go',
 			subtitle='Go 企业网站内容管理系统',
 			domain='',
-			keywords='gbootcms,cms',
-			description='GbootCMS',
+			keywords='pbootcms-go,cms',
+			description='PbootCMS-Go',
 			icp='',
-			copyright='Copyright © GbootCMS All Rights Reserved.'
+			copyright='Copyright © PbootCMS-Go All Rights Reserved.'
 			WHERE acode='cn'`,
 		`UPDATE ay_company SET
-			name='GbootCMS',
+			name='PbootCMS-Go',
 			address='', postcode='', contact='', mobile='', phone='', fax='',
 			email='', qq='', weixin='', blicense='', other=''
 			WHERE acode='cn'`,
-		`UPDATE ay_config SET value='GbootCMS' WHERE name IN ('watermark_text','cmsname')`,
+		`UPDATE ay_config SET value='PbootCMS-Go' WHERE name IN ('watermark_text','cmsname')`,
 	}
 	for _, s := range stmts {
 		if _, err := db.Exec(s); err != nil {
@@ -90,15 +90,15 @@ func cleanSQL(path string) error {
 	}
 	s = strings.Replace(s,
 		"('27','watermark_text','PbootCMS','2','255','水印文本')",
-		"('27','watermark_text','GbootCMS','2','255','水印文本')", 1)
+		"('27','watermark_text','PbootCMS-Go','2','255','水印文本')", 1)
 
 	siteRe := regexp.MustCompile(`(?s)INSERT INTO \` + "`" + `ay_site\` + "`" + ` \(.*?\) VALUES\s*\n\([^;]+\)\s*;`)
 	s = siteRe.ReplaceAllString(s, "INSERT INTO `ay_site` (`id`,`acode`,`title`,`subtitle`,`domain`,`logo`,`keywords`,`description`,`icp`,`theme`,`statistical`,`copyright`) VALUES\n"+
-		"('1','cn','GbootCMS','Go 企业网站内容管理系统','','/static/images/logo.png','gbootcms,cms','GbootCMS','','default','','Copyright © GbootCMS All Rights Reserved.');")
+		"('1','cn','PbootCMS-Go','Go 企业网站内容管理系统','','/static/images/logo.png','pbootcms-go,cms','PbootCMS-Go','','default','','Copyright © PbootCMS-Go All Rights Reserved.');")
 
 	coRe := regexp.MustCompile(`(?s)INSERT INTO \` + "`" + `ay_company\` + "`" + ` \(.*?\) VALUES\s*\n\([^;]+\)\s*;`)
 	s = coRe.ReplaceAllString(s, "INSERT INTO `ay_company` (`id`,`acode`,`name`,`address`,`postcode`,`contact`,`mobile`,`phone`,`fax`,`email`,`qq`,`weixin`,`blicense`,`other`) VALUES\n"+
-		"('1','cn','GbootCMS','','','','','','','','','','','');")
+		"('1','cn','PbootCMS-Go','','','','','','','','','','','');")
 
 	return os.WriteFile(path, []byte(s), 0o644)
 }

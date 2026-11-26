@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/front"
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 func imageExtPage(a *app.App, w http.ResponseWriter, r *http.Request, sess *auth.Session) {

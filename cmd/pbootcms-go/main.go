@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"os"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/config"
-	"gbootcms/internal/httpx"
-	"gbootcms/internal/install"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/config"
+	"github.com/zn49/pbootcms-go/internal/httpx"
+	"github.com/zn49/pbootcms-go/internal/install"
 )
 
 func main() {

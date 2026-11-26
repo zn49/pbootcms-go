@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 // Session is a file-backed cookie session.

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"gbootcms/internal/ent/sysconfig"
+	"github.com/zn49/pbootcms-go/internal/ent/sysconfig"
 	"strings"
 
 	"entgo.io/ent"

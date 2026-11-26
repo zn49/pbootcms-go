@@ -3,11 +3,11 @@ package app
 import (
 	"path/filepath"
 
-	"gbootcms/internal/auth"
-	"gbootcms/internal/cache"
-	"gbootcms/internal/config"
-	"gbootcms/internal/fsperm"
-	"gbootcms/internal/store"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/cache"
+	"github.com/zn49/pbootcms-go/internal/config"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/store"
 )
 
 // App is the running site. New only stores config; Bootstrap opens resources.

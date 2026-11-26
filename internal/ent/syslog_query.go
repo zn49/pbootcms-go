@@ -5,8 +5,8 @@ package ent
 import (
 	"context"
 	"fmt"
-	"gbootcms/internal/ent/predicate"
-	"gbootcms/internal/ent/syslog"
+	"github.com/zn49/pbootcms-go/internal/ent/predicate"
+	"github.com/zn49/pbootcms-go/internal/ent/syslog"
 	"math"
 
 	"entgo.io/ent"

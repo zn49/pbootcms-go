@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gbootcms/internal/ent/predicate"
-	"gbootcms/internal/ent/tag"
+	"github.com/zn49/pbootcms-go/internal/ent/predicate"
+	"github.com/zn49/pbootcms-go/internal/ent/tag"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

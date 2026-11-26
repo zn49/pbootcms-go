@@ -1,5 +1,5 @@
 -- Online Database Management SQL Dump
--- 数据库名: gbootcms
+-- 数据库名: pbootcms
 -- 生成日期: 2020-07-05 23:55:34
 -- PHP 版本: 5.6.33
 
@@ -68,7 +68,7 @@ CREATE TABLE `ay_company` (
 --
 
 INSERT INTO `ay_company` (`id`,`acode`,`name`,`address`,`postcode`,`contact`,`mobile`,`phone`,`fax`,`email`,`qq`,`weixin`,`blicense`,`other`) VALUES
-('1','cn','GbootCMS','','','','','','','','','','','');
+('1','cn','PbootCMS-Go','','','','','','','','','','','');
 
 -- --------------------------------------------------------
 
@@ -119,7 +119,7 @@ INSERT INTO `ay_config` (`id`,`name`,`value`,`type`,`sorting`,`description`) VAL
 ('24','form_send_mail','0','2','255','表单发送邮件'),
 ('25','baidu_xzh_type','0','2','255','熊掌号推送类型'),
 ('26','watermark_open','0','2','255','水印开关'),
-('27','watermark_text','GbootCMS','2','255','水印文本'),
+('27','watermark_text','PbootCMS-Go','2','255','水印文本'),
 ('28','watermark_text_font','','2','255','水印文本字体'),
 ('29','watermark_text_size','20','2','255','水印文本字号'),
 ('30','watermark_text_color','100,100,100','2','255','水印文本字体颜色'),
@@ -1024,7 +1024,7 @@ CREATE TABLE `ay_site` (
 --
 
 INSERT INTO `ay_site` (`id`,`acode`,`title`,`subtitle`,`domain`,`logo`,`keywords`,`description`,`icp`,`theme`,`statistical`,`copyright`) VALUES
-('1','cn','GbootCMS','Go 企业网站内容管理系统','','/static/images/logo.png','gbootcms,cms','GbootCMS','','default','','Copyright © GbootCMS All Rights Reserved.');
+('1','cn','PbootCMS-Go','Go 企业网站内容管理系统','','/static/images/logo.png','pbootcms-go,cms','PbootCMS-Go','','default','','Copyright © PbootCMS-Go All Rights Reserved.');
 
 -- --------------------------------------------------------
 

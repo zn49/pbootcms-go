@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"gbootcms/internal/ent/form"
+	"github.com/zn49/pbootcms-go/internal/ent/form"
 	"strings"
 
 	"entgo.io/ent"

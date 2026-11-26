@@ -8,9 +8,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 var spaceRe = regexp.MustCompile(`\s+`)

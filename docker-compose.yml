@@ -1,7 +1,7 @@
 services:
-  gbootcms:
+  pbootcms-go:
     build: .
-    image: gbootcms:local
+    image: pbootcms-go:local
     ports:
       - "8082:8080"
     environment:
@@ -10,7 +10,7 @@ services:
       TZ: Asia/Shanghai
       # MySQL/Pg example (create empty DB first, then open /install):
       # GBOOT_DRIVER: mysql
-      # GBOOT_DSN: user:pass@tcp(db:3306)/gbootcms?parseTime=true&charset=utf8mb4
+      # GBOOT_DSN: user:pass@tcp(db:3306)/pbootcms?parseTime=true&charset=utf8mb4
     volumes:
       - gboot_data:/app/site/data
       - gboot_upload:/app/site/static/upload

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"gbootcms/internal/ent/role"
+	"github.com/zn49/pbootcms-go/internal/ent/role"
 	"strings"
 
 	"entgo.io/ent"

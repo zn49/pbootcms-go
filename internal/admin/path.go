@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"gbootcms/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/auth"
 )
 
 // Logical admin URL prefix used in code/templates/ACL (always /admin).

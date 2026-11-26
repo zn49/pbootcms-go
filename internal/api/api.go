@@ -12,16 +12,16 @@ import (
 	"strings"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/ent/content"
-	"gbootcms/internal/ent/form"
-	"gbootcms/internal/ent/formfield"
-	"gbootcms/internal/ent/site"
-	"gbootcms/internal/front"
-	"gbootcms/internal/store"
-	"gbootcms/internal/urlx"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/ent/content"
+	"github.com/zn49/pbootcms-go/internal/ent/form"
+	"github.com/zn49/pbootcms-go/internal/ent/formfield"
+	"github.com/zn49/pbootcms-go/internal/ent/site"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/store"
+	"github.com/zn49/pbootcms-go/internal/urlx"
 )
 
 var htmlAssetRe = regexp.MustCompile(`(?i)((?:src|href)\s*=\s*)(['"])([^'"]*static/upload/[^'"]*)(['"])`)

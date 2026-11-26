@@ -9,11 +9,11 @@ import (
 	"strings"
 	"testing"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/config"
-	"gbootcms/internal/ent/site"
-	entuser "gbootcms/internal/ent/user"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/config"
+	"github.com/zn49/pbootcms-go/internal/ent/site"
+	entuser "github.com/zn49/pbootcms-go/internal/ent/user"
 )
 
 func TestCompleteFresh(t *testing.T) {
@@ -30,7 +30,7 @@ func TestCompleteFresh(t *testing.T) {
 	a := app.New(config.File{
 		Addr:     ":0",
 		Driver:   "sqlite",
-		DSN:      filepath.Join(root, "data", "gbootcms.db"),
+		DSN:      filepath.Join(root, "data", "pbootcms.db"),
 		SiteRoot: root,
 	})
 	a.CfgPath = cfgPath
@@ -38,7 +38,7 @@ func TestCompleteFresh(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/install", nil)
 	Serve(a, rec, req)
-	if rec.Code != 200 || !strings.Contains(rec.Body.String(), "安装 GbootCMS") {
+	if rec.Code != 200 || !strings.Contains(rec.Body.String(), "安装 PbootCMS-Go") {
 		t.Fatalf("GET install: %d %s", rec.Code, rec.Body.String())
 	}
 
@@ -49,7 +49,7 @@ func TestCompleteFresh(t *testing.T) {
 		Confirm:    "Secret99",
 		Addr:       ":8099",
 		Driver:     "sqlite",
-		SQLitePath: filepath.Join(root, "data", "gbootcms.db"),
+		SQLitePath: filepath.Join(root, "data", "pbootcms.db"),
 	})
 	if err != nil {
 		t.Fatal(err)

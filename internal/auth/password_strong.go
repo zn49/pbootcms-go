@@ -27,7 +27,7 @@ func Strong(plain string) bool {
 		return false
 	}
 	low := strings.ToLower(plain)
-	for _, bad := range []string{"12345678", "password", "qwertyui", "admin123", "gbootcms", "pbootcms"} {
+	for _, bad := range []string{"12345678", "password", "qwertyui", "admin123", "pbootcms-go", "pbootcms", "gbootcms"} {
 		if low == bad || strings.Contains(low, bad) && len(bad) >= 8 {
 			return false
 		}

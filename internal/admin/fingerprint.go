@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/config"
-	"gbootcms/internal/front"
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/config"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 // expireCookie clears a cookie on the client.
@@ -36,7 +36,7 @@ func dbInsecure(a *app.App) bool {
 		return false
 	}
 	low := strings.ToLower(a.Cfg.DSN)
-	return strings.Contains(low, "pbootcms") || strings.Contains(low, "gbootcms.db")
+	return strings.Contains(low, "pbootcms") || strings.Contains(low, "pbootcms.db") || strings.Contains(low, "gbootcms.db")
 }
 
 // modSQLiteDB copies the open sqlite file to a random name, updates config, reopens DB.

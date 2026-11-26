@@ -5,7 +5,7 @@ package hook
 import (
 	"context"
 	"fmt"
-	"gbootcms/internal/ent"
+	"github.com/zn49/pbootcms-go/internal/ent"
 )
 
 // The AreaFunc type is an adapter to allow the use of ordinary

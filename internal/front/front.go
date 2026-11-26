@@ -10,14 +10,14 @@ import (
 	"strings"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/cache"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/ent/content"
-	"gbootcms/internal/store"
-	"gbootcms/internal/tpl/pboot"
-	"gbootcms/internal/urlx"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/cache"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/ent/content"
+	"github.com/zn49/pbootcms-go/internal/store"
+	"github.com/zn49/pbootcms-go/internal/tpl/pboot"
+	"github.com/zn49/pbootcms-go/internal/urlx"
 )
 
 type hit struct {
@@ -351,7 +351,7 @@ func render(a *app.App, w http.ResponseWriter, r *http.Request, acode string, ru
 	}
 	site, _ := domain.Site(a.DB, acode)
 	if site == nil {
-		site = map[string]string{"title": "gbootcms", "theme": "default"}
+		site = map[string]string{"title": "pbootcms-go", "theme": "default"}
 	}
 	theme := site["theme"]
 	if theme == "" {

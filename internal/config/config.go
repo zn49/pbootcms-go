@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 // File is process config. Site settings stay in ay_config.
@@ -31,7 +31,7 @@ func Default() File {
 	return File{
 		Addr:     ":8080",
 		Driver:   "sqlite",
-		DSN:      filepath.Join(root, "data", "gbootcms.db"),
+		DSN:      filepath.Join(root, "data", "pbootcms.db"),
 		SiteRoot: root,
 	}
 }
@@ -93,7 +93,7 @@ func Load(path string) (File, error) {
 		if f.Driver != "sqlite" {
 			return File{}, fmt.Errorf("%s 需要配置 dsn", f.Driver)
 		}
-		f.DSN = filepath.Join(f.SiteRoot, "data", "gbootcms.db")
+		f.DSN = filepath.Join(f.SiteRoot, "data", "pbootcms.db")
 	} else if f.Driver == "sqlite" && !filepath.IsAbs(f.DSN) && !hasScheme(f.DSN) {
 		wd, _ := os.Getwd()
 		f.DSN = filepath.Join(wd, f.DSN)

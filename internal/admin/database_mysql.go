@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 var tableNameRe = regexp.MustCompile(`^[A-Za-z0-9_]+$`)
@@ -98,7 +98,7 @@ func backupMySQLTables(a *app.App, tables []string) error {
 			continue
 		}
 		var b strings.Builder
-		b.WriteString("-- gbootcms dump\nSET NAMES utf8mb4;\n\n")
+		b.WriteString("-- pbootcms-go dump\nSET NAMES utf8mb4;\n\n")
 		create, err := a.DB.Maps("SHOW CREATE TABLE `" + table + "`")
 		if err != nil || len(create) == 0 {
 			return fmt.Errorf("表结构 %s: %v", table, err)

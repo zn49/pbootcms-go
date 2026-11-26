@@ -12,26 +12,26 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	entg "gbootcms/internal/ent"
-	"gbootcms/internal/ent/content"
-	"gbootcms/internal/ent/contentext"
-	"gbootcms/internal/ent/contentsort"
-	"gbootcms/internal/ent/extfield"
-	"gbootcms/internal/ent/form"
-	"gbootcms/internal/ent/formfield"
-	"gbootcms/internal/ent/label"
-	"gbootcms/internal/ent/menu"
-	"gbootcms/internal/ent/message"
-	"gbootcms/internal/ent/model"
-	"gbootcms/internal/ent/site"
-	"gbootcms/internal/ent/sysconfig"
+	entg "github.com/zn49/pbootcms-go/internal/ent"
+	"github.com/zn49/pbootcms-go/internal/ent/content"
+	"github.com/zn49/pbootcms-go/internal/ent/contentext"
+	"github.com/zn49/pbootcms-go/internal/ent/contentsort"
+	"github.com/zn49/pbootcms-go/internal/ent/extfield"
+	"github.com/zn49/pbootcms-go/internal/ent/form"
+	"github.com/zn49/pbootcms-go/internal/ent/formfield"
+	"github.com/zn49/pbootcms-go/internal/ent/label"
+	"github.com/zn49/pbootcms-go/internal/ent/menu"
+	"github.com/zn49/pbootcms-go/internal/ent/message"
+	"github.com/zn49/pbootcms-go/internal/ent/model"
+	"github.com/zn49/pbootcms-go/internal/ent/site"
+	"github.com/zn49/pbootcms-go/internal/ent/sysconfig"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/domain"
-	"gbootcms/internal/front"
-	"gbootcms/internal/fsperm"
-	"gbootcms/internal/store"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/domain"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/store"
 )
 
 var bg = context.Background()
@@ -1971,7 +1971,7 @@ func backupSQLite(a *app.App) (string, error) {
 	if err := fsperm.MkdirAll(dir, fsperm.DirPrivate); err != nil {
 		return "", err
 	}
-	name := "gbootcms-" + time.Now().Format("20060102-150405") + ".db"
+	name := "pbootcms-go-" + time.Now().Format("20060102-150405") + ".db"
 	dst := filepath.Join(dir, name)
 	in, err := os.Open(src)
 	if err != nil {

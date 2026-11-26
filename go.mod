@@ -1,4 +1,4 @@
-module gbootcms
+module github.com/zn49/pbootcms-go
 
 go 1.27.4
 

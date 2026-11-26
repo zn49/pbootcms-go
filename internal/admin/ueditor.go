@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"gbootcms/internal/app"
-	"gbootcms/internal/front"
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/front"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 var ueditorComment = regexp.MustCompile(`(?s)/\*.*?\*/`)

@@ -19,13 +19,13 @@ import (
 
 	mysqldriver "github.com/go-sql-driver/mysql"
 
-	"gbootcms/internal/admin"
-	"gbootcms/internal/app"
-	"gbootcms/internal/auth"
-	"gbootcms/internal/config"
-	"gbootcms/internal/ent/site"
-	entuser "gbootcms/internal/ent/user"
-	"gbootcms/internal/fsperm"
+	"github.com/zn49/pbootcms-go/internal/admin"
+	"github.com/zn49/pbootcms-go/internal/app"
+	"github.com/zn49/pbootcms-go/internal/auth"
+	"github.com/zn49/pbootcms-go/internal/config"
+	"github.com/zn49/pbootcms-go/internal/ent/site"
+	entuser "github.com/zn49/pbootcms-go/internal/ent/user"
+	"github.com/zn49/pbootcms-go/internal/fsperm"
 )
 
 const lockName = "install.lock"
@@ -112,9 +112,9 @@ func formDefaults(a *app.App) formVals {
 		addr = a.Cfg.Addr
 	}
 	return formVals{
-		Title: "GbootCMS", Username: "admin", Password: GenPassword(), Addr: addr,
+		Title: "PbootCMS-Go", Username: "admin", Password: GenPassword(), Addr: addr,
 		Driver: "sqlite", SQLitePath: "site/data/" + config.RandomDBFile(),
-		DBHost: "127.0.0.1", DBPort: "3306", DBUser: "root", DBName: "gbootcms",
+		DBHost: "127.0.0.1", DBPort: "3306", DBUser: "root", DBName: "pbootcms",
 	}
 }
 
@@ -422,7 +422,7 @@ const pageHTML = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GbootCMS 安装</title>
+<title>PbootCMS-Go 安装</title>
 <style>
 body{font-family:system-ui,sans-serif;max-width:28rem;margin:3rem auto;padding:0 1rem;color:#1a1a1a;background:#f6f6f4}
 h1{font-size:1.4rem;font-weight:600;margin:0 0 .25rem}
@@ -436,7 +436,7 @@ button{margin-top:1.25rem;width:100%%;padding:.65rem;border:0;border-radius:4px;
 </style>
 </head>
 <body>
-<h1>安装 GbootCMS</h1>
+<h1>安装 PbootCMS-Go</h1>
 <p class="sub">首次运行：选择数据库、写入配置、设置管理员。</p>
 %s
 <form method="post" action="/install" autocomplete="off">
