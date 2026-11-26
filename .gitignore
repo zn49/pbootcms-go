@@ -1,6 +1,7 @@
 # --- local / secrets ---
-config.json
+/config.json
 config.local.json
+!site/core/extend/ueditor/php/config.json
 .env
 .env.*
 !.env.example

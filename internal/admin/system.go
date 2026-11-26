@@ -1353,17 +1353,15 @@ func serverPage(a *app.App, w http.ResponseWriter, r *http.Request, sess *auth.S
 	d := systemBag(a, w, r, sess, "Site")
 	host := r.Host
 	srv := map[string]string{
-		"php_os": runtime.GOOS, "php_version": runtime.Version(), "php_version_low": "", "php_min_version": "8.0",
-		"server_software": "pbootcms-go", "server_name": host, "server_port": "", "server_addr": "127.0.0.1",
-		"db_driver": a.DB.Driver, "upload_max_filesize": "20M", "post_max_size": "20M",
-		"http_host": host, "memory_limit": "-", "gd": "-",
-		"image_backend_config": "gd", "image_backend_effective": "gd",
-		"imagick": "否", "imagick_version": "-", "imagick_usable": "否", "imagick_unusable_reason": "-",
-		"imagick_policy_status": "-", "imagick_deep_probe": "-",
-		"image_cap_avif": "-", "image_cap_heic": "-", "image_cap_animated_gif": "-", "image_cap_webp": "-",
-		"curl": "-", "pthreads": "-", "xcache": "-", "apc": "-", "eaccelerator": "-", "wincache": "-",
-		"zendopcache": "-", "memcache": "-", "memcached": "-", "extensions": "-",
-		"max_file_uploads": "-",
+		"php_os":              runtime.GOOS,
+		"runtime":             runtime.Version(),
+		"server_software":     "pbootcms-go",
+		"server_name":         host,
+		"server_addr":         "127.0.0.1",
+		"db_driver":           a.DB.Driver,
+		"upload_max_filesize": "20M",
+		"http_host":           host,
+		"image_backend":       "Go image（JPEG/PNG/GIF/WebP）",
 	}
 	d.Vars["server"] = srv
 	writePHP(a, w, "system/server.html", d)

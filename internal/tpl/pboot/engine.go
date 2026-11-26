@@ -141,7 +141,8 @@ func Render(s string, ctx *Ctx) string {
 	prev := ""
 	for pass := 0; pass < 4 && s != prev; pass++ {
 		prev = s
-		for i := 0; i < 200; i++ {
+		// Until no pair tags left; cap is runaway only (not a page-size guess).
+		for i := 0; i < 100000; i++ {
 			name, attrs, inner, a, b, ok := findPair(s)
 			if !ok {
 				break

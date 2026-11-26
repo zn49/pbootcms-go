@@ -99,13 +99,8 @@
 			                    <td>[value->visits]</td>
 		                        <td>
 		                         	{if(!$value->outlink)}
-			                        	{php}
-			                        		$Parser=new app\home\controller\ParserController();
-			                        		$link=$Parser->parserLink(2,$value->urlname,'content',$value->scode,$value->sortfilename,$value->id,$value->filename);
-			                        	{/php}
-	
-			                        	<input type="hidden" name="urls[[value->id]]" value="{php}echo $link{/php}">
-			                        	<a href="{php}echo $link{/php}" class="layui-btn layui-btn-xs layui-btn-primary"  target="_blank">查看</a>
+			                        	<input type="hidden" name="urls[[value->id]]" value="[value->link]">
+			                        	<a href="[value->link]" class="layui-btn layui-btn-xs layui-btn-primary"  target="_blank">查看</a>
 		                        	{/if}
 		                            {fun=get_btn_del_post($value->id)}
 		                            {if(check_level('mod'))}

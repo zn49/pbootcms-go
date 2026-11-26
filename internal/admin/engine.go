@@ -75,7 +75,7 @@ func RenderPHP(root, rel string, d Data) (string, error) {
 	if strings.HasSuffix(relSlash, "system/database.html") {
 		s = patchDatabaseTpl(s)
 	}
-	if strings.HasSuffix(relSlash, "content/content.html") || strings.HasSuffix(relSlash, "content/single.html") {
+	if strings.HasSuffix(relSlash, "content/content.html") || strings.HasSuffix(relSlash, "content/single.html") || strings.HasSuffix(relSlash, "content/contentsort.html") {
 		s = patchContentLinkTpl(s)
 	}
 	s = stripPHPChrome(s)
@@ -157,7 +157,7 @@ var siteDirConst string
 func SetSiteDirConst(dir string) { siteDirConst = dir }
 
 func applyConsts(s string) string {
-	s = phpRe.ReplaceAllString(s, "#16b777")
+	s = phpRe.ReplaceAllString(s, "")
 	theme := "/apps/admin/view/default"
 	repl := map[string]string{
 		"{APP_THEME_DIR}": theme,
@@ -200,15 +200,16 @@ func expandGetCalls(s string, d Data) string {
 }
 
 func expandFuns(s string, d Data) string {
-	for i := 0; i < 80; i++ {
+	// Run until no {fun= left. Cap is runaway only (broken tags that refuse to shrink).
+	for n := 0; n < 100000; n++ {
 		start := strings.Index(s, "{fun=")
 		if start < 0 {
-			break
+			return s
 		}
 		nameStart := start + len("{fun=")
 		paren := strings.IndexByte(s[nameStart:], '(')
 		if paren < 0 {
-			break
+			return s[:start] + s[start+5:]
 		}
 		name := s[nameStart : nameStart+paren]
 		argStart := nameStart + paren + 1
@@ -223,7 +224,6 @@ func expandFuns(s string, d Data) string {
 			end++
 		}
 		if depth != 0 || end >= len(s) || s[end] != '}' {
-			// skip broken tag
 			s = s[:start] + s[start+5:]
 			continue
 		}
@@ -285,17 +285,21 @@ func expandURLCalls(s string, d Data) string {
 func ueditorHolder(arg string, d Data) string {
 	arg = strings.TrimSpace(arg)
 	arg = strings.Trim(arg, "'\"")
+	var out string
 	if strings.HasPrefix(arg, "$content->") {
 		if cm, ok := d.Vars["content"].(map[string]string); ok {
-			return cm[strings.TrimPrefix(arg, "$content->")]
+			out = cm[strings.TrimPrefix(arg, "$content->")]
 		}
-	}
-	if cm, ok := d.Vars["content"].(map[string]string); ok {
+	} else if cm, ok := d.Vars["content"].(map[string]string); ok {
 		if v, ok := cm[arg]; ok {
-			return v
+			out = v
 		}
 	}
-	return arg
+	if out == "" {
+		out = arg
+	}
+	// DB/import may store entity-encoded HTML; editor needs raw markup.
+	return html.UnescapeString(out)
 }
 
 func funStrReplace(argsRaw string) string {
@@ -341,7 +345,8 @@ func expandAllForeach(s string, d Data) string {
 }
 
 func expandAllForeachParent(s string, d Data, parent map[string]string) string {
-	for i := 0; i < 40; i++ {
+	// nesting depth only; cap is runaway for cyclic/malformed foreach
+	for i := 0; i < 10000; i++ {
 		loc := matchForeach(s)
 		if loc == nil {
 			break
@@ -481,8 +486,8 @@ func replaceVars(s string, d Data) string {
 }
 
 func renderIf(s string, d Data, row map[string]string) string {
-	// config.html alone has 100+ ifs; keep going until none left (cap guards runaway)
-	for i := 0; i < 500; i++ {
+	// Until no {if( left. Cap is runaway only.
+	for i := 0; i < 100000; i++ {
 		m := matchIf(s)
 		if m == nil {
 			return s

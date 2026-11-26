@@ -1,6 +1,7 @@
 package admin
 
 import (
+	_ "embed"
 	"encoding/json"
 	"io"
 	"io/fs"
@@ -20,6 +21,9 @@ import (
 
 var ueditorComment = regexp.MustCompile(`(?s)/\*.*?\*/`)
 
+//go:embed ueditorcfg/config.json
+var ueditorConfigFallback []byte
+
 // UEditor handles /core/extend/ueditor/php/controller.php (config + uploads).
 func UEditor(a *app.App, w http.ResponseWriter, r *http.Request) {
 	sess := adminSess(a, r)
@@ -31,8 +35,7 @@ func UEditor(a *app.App, w http.ResponseWriter, r *http.Request) {
 	cfgPath := filepath.Join(a.Cfg.SiteRoot, "core", "extend", "ueditor", "php", "config.json")
 	raw, err := os.ReadFile(cfgPath)
 	if err != nil {
-		ueditorJSON(w, map[string]any{"state": "配置文件不存在"})
-		return
+		raw = ueditorConfigFallback
 	}
 	clean := ueditorComment.ReplaceAll(raw, nil)
 	switch action {

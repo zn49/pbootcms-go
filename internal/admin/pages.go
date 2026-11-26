@@ -39,6 +39,27 @@ var uploadExt = map[string]bool{
 	"rar": true, "zip": true, "pdf": true, "txt": true, "mp4": true, "mp3": true,
 }
 
+// pathKV parses /admin/Ctrl/act/k/v/... and PHP leftovers like mcode/1&scode=21.
+func pathKV(parts []string) map[string]string {
+	kv := map[string]string{}
+	for i := 2; i+1 < len(parts); i += 2 {
+		k, v := parts[i], parts[i+1]
+		if j := strings.IndexByte(v, '&'); j >= 0 {
+			for _, pair := range strings.Split(v[j+1:], "&") {
+				if eq := strings.IndexByte(pair, '='); eq > 0 {
+					kk, vv := pair[:eq], pair[eq+1:]
+					if kv[kk] == "" {
+						kv[kk] = vv
+					}
+				}
+			}
+			v = v[:j]
+		}
+		kv[k] = v
+	}
+	return kv
+}
+
 // Serve is the admin site.
 func Serve(a *app.App, w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/admin")
@@ -58,10 +79,7 @@ func Serve(a *app.App, w http.ResponseWriter, r *http.Request) {
 	if strings.EqualFold(action, "upload") {
 		action = "upload"
 	}
-	kv := map[string]string{}
-	for i := 2; i+1 < len(parts); i += 2 {
-		kv[parts[i]] = parts[i+1]
-	}
+	kv := pathKV(parts)
 	for k, v := range r.URL.Query() {
 		if len(v) > 0 && kv[k] == "" {
 			kv[k] = v[0]
@@ -311,10 +329,18 @@ func bag(a *app.App, w http.ResponseWriter, r *http.Request, sess *auth.Session)
 			get[k] = vs[0]
 		}
 	}
+	siteTitle := "管理中心"
+	if acode := session["acode"]; acode != "" {
+		if one, err := a.DB.Ent.Site.Query().Where(site.AcodeEQ(acode)).First(bg); err == nil && one.Title != "" {
+			siteTitle = one.Title
+		}
+	} else if one, err := a.DB.Ent.Site.Query().First(bg); err == nil && one.Title != "" {
+		siteTitle = one.Title
+	}
 	return Data{
 		Vars: map[string]any{
 			"menus": menus, "menu_html": menuTree(rows, sess, r.URL.Path), "area_html": areaForm(a, sess),
-			"formcheck": fs.Values["formcheck"], "title": "管理中心",
+			"formcheck": fs.Values["formcheck"], "title": "管理中心", "site_title": siteTitle,
 			"controller": ctrl, "url": r.URL.Path, "admin_path": Path(),
 			"on1": "layui-this", "show1": "layui-show", "on2": "", "show2": "", "tab2": "新增", "haspane": "0",
 		},

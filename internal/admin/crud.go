@@ -305,10 +305,16 @@ func sortBag(a *app.App, w http.ResponseWriter, r *http.Request, sess *auth.Sess
 		byM[m["mcode"]] = m
 	}
 	kids := map[string][]map[string]string{}
+	rules := front.Rules(a.DB)
 	for _, row := range rows {
 		if m := byM[row["mcode"]]; m != nil {
 			row["type"] = m["type"]
 			row["urlname"] = m["urlname"]
+		}
+		if row["outlink"] == "" {
+			row["link"] = rules.Sort(row["filename"], row["urlname"], row["scode"])
+		} else {
+			row["link"] = row["outlink"]
 		}
 		kids[row["pcode"]] = append(kids[row["pcode"]], row)
 	}
@@ -685,6 +691,10 @@ func contentRows(a *app.App, acode, mcode string, single bool, kv map[string]str
 	}
 	if kv["scode"] != "" {
 		scodes = []string{kv["scode"]}
+	}
+	// Invalid/garbage mcode must not fall through to "all content".
+	if mcode != "" && kv["scode"] == "" && len(scodes) == 0 {
+		return nil
 	}
 	if len(scodes) > 0 {
 		q = q.Where(content.ScodeIn(scodes...))
