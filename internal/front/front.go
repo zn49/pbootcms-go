@@ -192,7 +192,13 @@ func peelPage(p string, rules urlx.Rules) (string, int) {
 	i := strings.LastIndex(base, br)
 	if i > 0 {
 		if n, err := strconv.Atoi(base[i+len(br):]); err == nil && n > 0 {
-			return base[:i], n
+			stem := base[:i]
+			// Default sort URL is list_{scode}. Do not treat list_14 as "list" page 14.
+			// Real paging is list_14_2 (stem already contains the break).
+			if !strings.Contains(stem, br) && stem == "list" {
+				return base, 1
+			}
+			return stem, n
 		}
 	}
 	return base, 1
@@ -285,6 +291,17 @@ func resolve(db *store.DB, acode, path string, page int, rules urlx.Rules) hit {
 	}
 	if s, ok := byFile[path]; ok {
 		return listOrSingle(db, acode, s, page)
+	}
+	// filename empty → URL list_{scode}; index byCode when byFile missed it
+	if br := rules.Break; br != "" {
+		if pref := "list" + br; strings.HasPrefix(path, pref) {
+			sid := strings.TrimPrefix(path, pref)
+			if sid != "" && !strings.Contains(sid, "/") && !strings.Contains(sid, br) {
+				if s := byCode[sid]; s != nil && strings.TrimSpace(s["filename"]) == "" {
+					return listOrSingle(db, acode, s, page)
+				}
+			}
+		}
 	}
 	if rules.ContentPath {
 		if c, _ := domain.ContentOne(db, acode, path); c != nil {
